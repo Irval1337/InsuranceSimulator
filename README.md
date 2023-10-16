@@ -19,7 +19,6 @@
  * string insurance_company_name // название компании, которая предлагает страховку (ОСАГО/КАСКО)
  * string insurance_type // общий тип, к которому относится это предложение (авто/здоровье/жилье)
  * int relevance_period (in months) // сколько еще месяцев предложение актуально
-
  * StatsData stats // общая информация о клиентах
 
 #### InsuranceType: // тип страховки (авто/здоровье/жилье)
@@ -27,11 +26,9 @@
  * bool enabled // предоставляем ли мы сейчас эти услуги
  * int potential_customers_count // количество потенциальных покупателей
  * pair<int, int> insured_events_range // диапазон изменения количества страховых случаев каждый месяц
- * 
  * StatsData stats // общая информация о клиентах
 
 #### Insurance:
  * InsuranceType[] insurances // все страховки, которые предоставляются компанией
  * double tax_percentage // размер налога гос-ву
- * 
  * StatsData stats // общая информация о клиентах
