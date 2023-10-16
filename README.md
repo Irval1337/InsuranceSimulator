@@ -1,6 +1,6 @@
 ## InsuranceSimulator
 
-Classes:
+### Classes
 
 #### InsuranceOffer: // страховое предложение
  * int contribution_amount // взнос
