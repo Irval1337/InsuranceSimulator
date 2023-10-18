@@ -32,12 +32,32 @@ private:
     StatsData stats_; // общая информация о клиентах
     double capital_; // капитал компании
     bool banned_; // обонкротились или нет
+
     Q_PROPERTY(QVector<InsuranceType> insurances READ insurances WRITE setInsurances NOTIFY insurancesChanged)
     Q_PROPERTY(double tax_percentage READ tax_percentage WRITE setTax_percentage NOTIFY tax_percentageChanged)
     Q_PROPERTY(StatsData stats READ stats WRITE setStats NOTIFY statsChanged)
     Q_PROPERTY(double capital READ capital WRITE setCapital NOTIFY capitalChanged)
     Q_PROPERTY(bool banned READ banned WRITE setBanned NOTIFY bannedChanged)
 };
+
+inline void Insurance::insurancesChanged() {
+    StatsData stats;
+    QMap<QPair<int, int>, int> duration;
+    for(int i = 0; i < insurances_.size(); ++i) {
+        stats.setTotal_customers_count(stats.total_customers_count() + insurances_[i].stats().total_customers_count());
+        stats.setMonth_customers_count(stats.month_customers_count() + insurances_[i].stats().month_customers_count());
+        stats.setTotal_revenue(stats.total_revenue() + insurances_[i].stats().total_revenue());
+        stats.setMonth_revenue(stats.month_revenue() + insurances_[i].stats().month_revenue());
+        stats.setTotal_payment_amount(stats.total_payment_amount() + insurances_[i].stats().total_payment_amount());
+        stats.setMonth_payment_amount(stats.month_payment_amount() + insurances_[i].stats().month_payment_amount());
+
+        for(auto& k : insurances_[i].stats().duration_count().keys()) {
+            int count = insurances_[i].stats().duration_count().value(k);
+            duration[k] += count;
+        }
+    }
+    stats.setDuration_count(duration);
+}
 
 inline QVector<InsuranceType> Insurance::insurances() const
 {
@@ -107,19 +127,17 @@ inline void Insurance::setBanned(bool newBanned)
 void Insurance::emulate() {
     auto insurs = insurances();
     for(int i = 0; i < insurs.size(); ++i) {
-        if (!insurs[i].enabled()) continue;
-        double tax = capital() * tax_percentage();
-        // todo tax
+        auto offers = insurs[i].offers();
+
+        QVector<double> events;
 
         int insurance_events = Random::get(insurs[i].insured_events_range().first, insurs[i].insured_events_range().second);
         int customers = insurs[i].stats().total_customers_count();
         QVector<int> pref_sums;
-        pref_sums.push_back(insurs[i].offers()[0].stats().total_customers_count());
-        for(int j = 1; j < insurs[i].offers().size(); ++j) {
-            pref_sums.push_back(pref_sums[pref_sums.size() - 1] + insurs[i].offers()[j].stats().total_customers_count());
+        pref_sums.push_back(offers[0].stats().total_customers_count());
+        for(int j = 1; j < offers.size(); ++j) {
+            pref_sums.push_back(pref_sums[pref_sums.size() - 1] + offers[j].stats().total_customers_count());
         }
-
-        // todo QVector<event>, event = new customer, bad event, tax (в начале месяца)
         // + random shuffle
 
         for(int j = 0; j < insurance_events; ++j) {
@@ -128,13 +146,32 @@ void Insurance::emulate() {
             int L = -1, R = pref_sums.size(), M;
             while (L < R - 1) {
                 M = L + (R - L) / 2;
-                if (pref_sums[M] < _rnd) L = M;
+                if (pref_sums[M] <= _rnd) L = M;
                 else R = M;
             }
 
-            // bad event with R-th offer
+            // bad event with L-th offer
         }
 
         // adding new customers sqrt(sqrt(customers)) * rnd(0, 50) * выгода
+
+        for(int j = 0; j < offers.size(); ++j) {
+            QMap<int, int> next_duration;
+            auto stats = offers[j].stats();
+            stats.setMonth_customers_count(0);
+            for(auto& k : offers[j].stats().duration_count().keys()) {
+                int count = offers[j].stats().duration_count().value(k);
+                if (k == 1) {
+                    stats.setMonth_customers_count(stats.month_customers_count() - count);
+                    stats.setTotal_customers_count(stats.total_customers_count() - count);
+                } else {
+                    next_duration[k - 1] += count;
+                }
+            }
+            stats.setDuration_count(next_duration);
+            offers[i].se
+        }
+
+        events.push_front(-capital() * tax_percentage());
     }
 }

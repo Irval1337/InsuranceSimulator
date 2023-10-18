@@ -1,7 +1,19 @@
 #pragma once
 
+#include "qtmetamacros.h"
+#include <QMap>
+
 class StatsData {
 public:
+    StatsData() {
+        total_customers_count_ = 0;
+        month_customers_count_ = 0;
+        total_revenue_ = 0;
+        month_revenue_ = 0;
+        total_payment_amount_ = 0;
+        month_payment_amount_ = 0;
+    }
+
     int total_customers_count() const;
     void setTotal_customers_count(int newTotal_customers_count);
     int month_customers_count() const;
@@ -14,14 +26,17 @@ public:
     void setTotal_payment_amount(double newTotal_payment_amount);
     double month_payment_amount() const;
     void setMonth_payment_amount(double newMonth_payment_amount);
+    QMap<QPair<int, int>, int> duration_count() const;
+    void setDuration_count(const QMap<QPair<int, int>, int>& newDuration_count);
 
     bool operator==(const StatsData& other) const {
-        return total_customers_count() == other.total_customers_count() &&
-                month_customers_count() == other.month_customers_count() &&
-                total_revenue() == other.total_revenue() &&
-                month_revenue() == other.month_revenue() &&
-                total_payment_amount() == other.total_payment_amount() &&
-                month_payment_amount() == other.month_payment_amount();
+        return total_customers_count_ == other.total_customers_count_ &&
+                month_customers_count_ == other.month_customers_count_ &&
+                total_revenue_ == other.total_revenue_ &&
+                month_revenue_ == other.month_revenue_ &&
+                total_payment_amount_ == other.total_payment_amount_ &&
+                month_payment_amount_ == other.month_payment_amount_ &&
+                duration_count_ == other.duration_count_;
     }
 
 signals:
@@ -31,6 +46,7 @@ signals:
     void month_revenueChanged();
     void total_payment_amountChanged();
     void month_payment_amountChanged();
+    void duration_countChanged();
 
 private:
     int total_customers_count_; // количество покупателей
@@ -39,12 +55,16 @@ private:
     double month_revenue_; // выручка за прошлый месяц
     double total_payment_amount_; // общая сумма выплат за все время
     double month_payment_amount_; // сумма выплат за последний месяц
+
+    QMap<QPair<int, int>, int> duration_count_; // сроки страховки текущих пользователей
+
     Q_PROPERTY(int total_customers_count READ total_customers_count WRITE setTotal_customers_count NOTIFY total_customers_countChanged)
     Q_PROPERTY(int month_customers_count READ month_customers_count WRITE setMonth_customers_count NOTIFY month_customers_countChanged)
     Q_PROPERTY(double total_revenue READ total_revenue WRITE setTotal_revenue NOTIFY total_revenueChanged)
     Q_PROPERTY(double month_revenue READ month_revenue WRITE setMonth_revenue NOTIFY month_revenueChanged)
     Q_PROPERTY(double total_payment_amount READ total_payment_amount WRITE setTotal_payment_amount NOTIFY total_payment_amountChanged)
     Q_PROPERTY(double month_payment_amount READ month_payment_amount WRITE setMonth_payment_amount NOTIFY month_payment_amountChanged)
+    Q_PROPERTY(QMap<int, int> duration_count READ duration_count WRITE setDuration_count NOTIFY duration_countChanged)
 };
 
 inline int StatsData::total_customers_count() const
@@ -123,6 +143,19 @@ inline void StatsData::setMonth_payment_amount(double newMonth_payment_amount)
         return;
     month_payment_amount_ = newMonth_payment_amount;
     emit month_payment_amountChanged();
+}
+
+inline QMap<QPair<int, int>, int> StatsData::duration_count() const
+{
+    return duration_count_;
+}
+
+inline void StatsData::setDuration_count(const QMap<QPair<int, int>, int> &newDuration_count)
+{
+    if (duration_count_ == newDuration_count)
+        return;
+    duration_count_ = newDuration_count;
+    emit duration_countChanged();
 }
 
 template<class T>

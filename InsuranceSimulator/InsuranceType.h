@@ -1,6 +1,7 @@
 #pragma once
 
 #include "InsuranceOffer.h"
+#include <QVector>
 
 class InsuranceType {
 public:
@@ -28,12 +29,32 @@ private:
     int potential_customers_count_; // количество потенциальных покупателей
     QPair<int, int> insured_events_range_; // диапазон изменения количества страховых случаев каждый месяц
     StatsData stats_; // общая информация о клиентах
+
     Q_PROPERTY(QVector<InsuranceOffer> offers READ offers WRITE setOffers NOTIFY offersChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(int potential_customers_count READ potential_customers_count WRITE setPotential_customers_count NOTIFY potential_customers_countChanged)
     Q_PROPERTY(QPair<int, int> insured_events_range READ insured_events_range WRITE setInsured_events_range NOTIFY insured_events_rangeChanged)
     Q_PROPERTY(StatsData stats READ stats WRITE setStats NOTIFY statsChanged)
 };
+
+inline void InsuranceType::offersChanged() {
+    StatsData stats;
+    QMap<QPair<int, int>, int> duration;
+    for(int i = 0; i < offers_.size(); ++i) {
+        stats.setTotal_customers_count(stats.total_customers_count() + offers_[i].stats().total_customers_count());
+        stats.setMonth_customers_count(stats.month_customers_count() + offers_[i].stats().month_customers_count());
+        stats.setTotal_revenue(stats.total_revenue() + offers_[i].stats().total_revenue());
+        stats.setMonth_revenue(stats.month_revenue() + offers_[i].stats().month_revenue());
+        stats.setTotal_payment_amount(stats.total_payment_amount() + offers_[i].stats().total_payment_amount());
+        stats.setMonth_payment_amount(stats.month_payment_amount() + offers_[i].stats().month_payment_amount());
+
+        for(auto& k : offers_[i].stats().duration_count().keys()) {
+            int count = offers_[i].stats().duration_count().value(k);
+            duration[k] += count;
+        }
+    }
+    stats.setDuration_count(duration);
+}
 
 inline QVector<InsuranceOffer> InsuranceType::offers() const
 {

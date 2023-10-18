@@ -24,6 +24,9 @@ public:
     StatsData stats() const;
     void setStats(const StatsData &newStats);
 
+    bool enabled() const;
+    void setEnabled(bool newEnabled);
+
 signals:
     void contribution_amountChanged();
     void contribution_periodChanged();
@@ -35,7 +38,10 @@ signals:
     void relevance_periodChanged();
     void statsChanged();
 
+    void enabledChanged();
+
 private:
+    bool enabled_; // предоставляется ли эта услуга
     int contribution_amount_; // взнос
     int contribution_period_; // периодичность взноса
     int duration_; // срок действия договора
@@ -45,6 +51,7 @@ private:
     QString insurance_type_; // общий тип, к которому относится это предложение (авто/здоровье/жилье)
     int relevance_period_; // сколько еще месяцев предложение актуально
     StatsData stats_; // общая информация о клиентах
+
     Q_PROPERTY(int contribution_amount READ contribution_amount WRITE setContribution_amount NOTIFY contribution_amountChanged)
     Q_PROPERTY(int contribution_period READ contribution_period WRITE setContribution_period NOTIFY contribution_periodChanged)
     Q_PROPERTY(int duration READ duration WRITE setDuration NOTIFY durationChanged)
@@ -54,6 +61,7 @@ private:
     Q_PROPERTY(QString insurance_type READ insurance_type WRITE setInsurance_type NOTIFY insurance_typeChanged)
     Q_PROPERTY(int relevance_period READ relevance_period WRITE setRelevance_period NOTIFY relevance_periodChanged)
     Q_PROPERTY(StatsData stats READ stats WRITE setStats NOTIFY statsChanged)
+    Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
 };
 
 inline int InsuranceOffer::contribution_amount() const
@@ -171,4 +179,17 @@ inline void InsuranceOffer::setStats(const StatsData &newStats)
         return;
     stats_ = newStats;
     emit statsChanged();
+}
+
+inline bool InsuranceOffer::enabled() const
+{
+    return enabled_;
+}
+
+inline void InsuranceOffer::setEnabled(bool newEnabled)
+{
+    if (enabled_ == newEnabled)
+        return;
+    enabled_ = newEnabled;
+    emit enabledChanged();
 }
