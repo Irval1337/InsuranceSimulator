@@ -6,14 +6,23 @@ public:
     void setTotal_customers_count(int newTotal_customers_count);
     int month_customers_count() const;
     void setMonth_customers_count(int newMonth_customers_count);
-    int total_revenue() const;
-    void setTotal_revenue(int newTotal_revenue);
-    int month_revenue() const;
-    void setMonth_revenue(int newMonth_revenue);
-    int total_payment_amount() const;
-    void setTotal_payment_amount(int newTotal_payment_amount);
-    int month_payment_amount() const;
-    void setMonth_payment_amount(int newMonth_payment_amount);
+    double total_revenue() const;
+    void setTotal_revenue(double newTotal_revenue);
+    double month_revenue() const;
+    void setMonth_revenue(double newMonth_revenue);
+    double total_payment_amount() const;
+    void setTotal_payment_amount(double newTotal_payment_amount);
+    double month_payment_amount() const;
+    void setMonth_payment_amount(double newMonth_payment_amount);
+
+    bool operator==(const StatsData& other) const {
+        return total_customers_count() == other.total_customers_count() &&
+                month_customers_count() == other.month_customers_count() &&
+                total_revenue() == other.total_revenue() &&
+                month_revenue() == other.month_revenue() &&
+                total_payment_amount() == other.total_payment_amount() &&
+                month_payment_amount() == other.month_payment_amount();
+    }
 
 signals:
     void total_customers_countChanged();
@@ -26,16 +35,16 @@ signals:
 private:
     int total_customers_count_; // количество покупателей
     int month_customers_count_; // количество новых покупателей за месяц
-    int total_revenue_; // общая выручка
-    int month_revenue_; // выручка за прошлый месяц
-    int total_payment_amount_; // общая сумма выплат за все время
-    int month_payment_amount_; // сумма выплат за последний месяц
+    double total_revenue_; // общая выручка
+    double month_revenue_; // выручка за прошлый месяц
+    double total_payment_amount_; // общая сумма выплат за все время
+    double month_payment_amount_; // сумма выплат за последний месяц
     Q_PROPERTY(int total_customers_count READ total_customers_count WRITE setTotal_customers_count NOTIFY total_customers_countChanged)
     Q_PROPERTY(int month_customers_count READ month_customers_count WRITE setMonth_customers_count NOTIFY month_customers_countChanged)
-    Q_PROPERTY(int total_revenue READ total_revenue WRITE setTotal_revenue NOTIFY total_revenueChanged)
-    Q_PROPERTY(int month_revenue READ month_revenue WRITE setMonth_revenue NOTIFY month_revenueChanged)
-    Q_PROPERTY(int total_payment_amount READ total_payment_amount WRITE setTotal_payment_amount NOTIFY total_payment_amountChanged)
-    Q_PROPERTY(int month_payment_amount READ month_payment_amount WRITE setMonth_payment_amount NOTIFY month_payment_amountChanged)
+    Q_PROPERTY(double total_revenue READ total_revenue WRITE setTotal_revenue NOTIFY total_revenueChanged)
+    Q_PROPERTY(double month_revenue READ month_revenue WRITE setMonth_revenue NOTIFY month_revenueChanged)
+    Q_PROPERTY(double total_payment_amount READ total_payment_amount WRITE setTotal_payment_amount NOTIFY total_payment_amountChanged)
+    Q_PROPERTY(double month_payment_amount READ month_payment_amount WRITE setMonth_payment_amount NOTIFY month_payment_amountChanged)
 };
 
 inline int StatsData::total_customers_count() const
@@ -64,54 +73,64 @@ inline void StatsData::setMonth_customers_count(int newMonth_customers_count)
     emit month_customers_countChanged();
 }
 
-inline int StatsData::total_revenue() const
+inline double StatsData::total_revenue() const
 {
     return total_revenue_;
 }
 
-inline void StatsData::setTotal_revenue(int newTotal_revenue)
+inline void StatsData::setTotal_revenue(double newTotal_revenue)
 {
-    if (total_revenue_ == newTotal_revenue)
+    if (qFuzzyCompare(total_revenue_, newTotal_revenue))
         return;
     total_revenue_ = newTotal_revenue;
     emit total_revenueChanged();
 }
 
-inline int StatsData::month_revenue() const
+inline double StatsData::month_revenue() const
 {
     return month_revenue_;
 }
 
-inline void StatsData::setMonth_revenue(int newMonth_revenue)
+inline void StatsData::setMonth_revenue(double newMonth_revenue)
 {
-    if (month_revenue_ == newMonth_revenue)
+    if (qFuzzyCompare(month_revenue_, newMonth_revenue))
         return;
     month_revenue_ = newMonth_revenue;
     emit month_revenueChanged();
 }
 
-inline int StatsData::total_payment_amount() const
+inline double StatsData::total_payment_amount() const
 {
     return total_payment_amount_;
 }
 
-inline void StatsData::setTotal_payment_amount(int newTotal_payment_amount)
+inline void StatsData::setTotal_payment_amount(double newTotal_payment_amount)
 {
-    if (total_payment_amount_ == newTotal_payment_amount)
+    if (qFuzzyCompare(total_payment_amount_, newTotal_payment_amount))
         return;
     total_payment_amount_ = newTotal_payment_amount;
     emit total_payment_amountChanged();
 }
 
-inline int StatsData::month_payment_amount() const
+inline double StatsData::month_payment_amount() const
 {
     return month_payment_amount_;
 }
 
-inline void StatsData::setMonth_payment_amount(int newMonth_payment_amount)
+inline void StatsData::setMonth_payment_amount(double newMonth_payment_amount)
 {
-    if (month_payment_amount_ == newMonth_payment_amount)
+    if (qFuzzyCompare(month_payment_amount_, newMonth_payment_amount))
         return;
     month_payment_amount_ = newMonth_payment_amount;
     emit month_payment_amountChanged();
+}
+
+template<class T>
+bool operator==(const QVector<T>& vec, const QVector<T>& vec2) {
+    if (vec.size() != vec2.size()) return false;
+    int sz = vec.size();
+    for(int i = 0; i < sz; ++i) {
+        if (vec[i] != vec2[i]) return false;
+    }
+    return true;
 }

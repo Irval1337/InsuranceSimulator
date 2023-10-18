@@ -24,4 +24,5 @@ HEADERS += \
     Insurance.h \
     InsuranceOffer.h \
     InsuranceType.h \
+    Random.h \
     StatsData.h
