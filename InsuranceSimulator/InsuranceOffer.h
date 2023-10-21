@@ -5,8 +5,8 @@
 
 class InsuranceOffer {
 public:
-    int contribution_amount() const;
-    void setContribution_amount(int newContribution_amount);
+    double contribution_amount() const;
+    void setContribution_amount(double newContribution_amount);
     int contribution_period() const;
     void setContribution_period(int newContribution_period);
     int duration() const;
@@ -42,7 +42,7 @@ signals:
 
 private:
     bool enabled_; // предоставляется ли эта услуга
-    int contribution_amount_; // взнос
+    double contribution_amount_; // взнос
     int contribution_period_; // периодичность взноса
     int duration_; // срок действия договора
     double max_reimbursement_amount_; // максимальныя сумма возмещения
@@ -52,7 +52,7 @@ private:
     int relevance_period_; // сколько еще месяцев предложение актуально
     StatsData stats_; // общая информация о клиентах
 
-    Q_PROPERTY(int contribution_amount READ contribution_amount WRITE setContribution_amount NOTIFY contribution_amountChanged)
+    Q_PROPERTY(double contribution_amount READ contribution_amount WRITE setContribution_amount NOTIFY contribution_amountChanged)
     Q_PROPERTY(int contribution_period READ contribution_period WRITE setContribution_period NOTIFY contribution_periodChanged)
     Q_PROPERTY(int duration READ duration WRITE setDuration NOTIFY durationChanged)
     Q_PROPERTY(double max_reimbursement_amount READ max_reimbursement_amount WRITE setMax_reimbursement_amount NOTIFY max_reimbursement_amountChanged)
@@ -64,12 +64,17 @@ private:
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
 };
 
-inline int InsuranceOffer::contribution_amount() const
+void InsuranceOffer::relevance_periodChanged() {
+    if (relevance_period_ == 0)
+        setEnabled(false);
+}
+
+inline double InsuranceOffer::contribution_amount() const
 {
     return contribution_amount_;
 }
 
-inline void InsuranceOffer::setContribution_amount(int newContribution_amount)
+inline void InsuranceOffer::setContribution_amount(double newContribution_amount)
 {
     if (contribution_amount_ == newContribution_amount)
         return;

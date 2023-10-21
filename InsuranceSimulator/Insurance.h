@@ -38,6 +38,15 @@ private:
     Q_PROPERTY(StatsData stats READ stats WRITE setStats NOTIFY statsChanged)
     Q_PROPERTY(double capital READ capital WRITE setCapital NOTIFY capitalChanged)
     Q_PROPERTY(bool banned READ banned WRITE setBanned NOTIFY bannedChanged)
+
+    struct event {
+        int type;
+        double amount_diff;
+        event(int type_, int amount_diff_) {
+            type = type_;
+            amount_diff = amount_diff_;
+        }
+    };
 };
 
 inline void Insurance::insurancesChanged() {
@@ -129,10 +138,9 @@ void Insurance::emulate() {
     for(int i = 0; i < insurs.size(); ++i) {
         auto offers = insurs[i].offers();
 
-        QVector<double> events;
+        QVector<event> events;
 
         int insurance_events = Random::get(insurs[i].insured_events_range().first, insurs[i].insured_events_range().second);
-        int customers = insurs[i].stats().total_customers_count();
         QVector<int> pref_sums;
         pref_sums.push_back(offers[0].stats().total_customers_count());
         for(int j = 1; j < offers.size(); ++j) {
@@ -150,7 +158,20 @@ void Insurance::emulate() {
                 else R = M;
             }
 
-            // bad event with L-th offer
+            double coeff = Random::get(0.0, 1.0);
+            int ind = min(max(L, 0), offers.size() - 1);
+            double amount = offers[ind].max_reimbursement_amount() * coeff;
+            if (amount < offers[ind].franchise()) continue;
+            events.push_back(event(1, amount));
+        }
+
+        for(int j = 0; j < offers.size(); ++j) {
+            offers[j].setRelevance_period(offers[j].relevance_period() - 1);
+            auto prev_stats = offers[j].stats();
+            prev_stats.setMonth_revenue(0);
+            prev_stats.setMonth_customers_count(0);
+            prev_stats.setMonth_payment_amount(0);
+            offers[j].setStats(prev_stats);
         }
 
         // adding new customers sqrt(sqrt(customers)) * rnd(0, 50) * выгода
