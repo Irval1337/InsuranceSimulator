@@ -150,7 +150,7 @@ inline QMap<int, int> StatsData::duration_count() const
     return duration_count_;
 }
 
-inline void StatsData::setDuration_count(const QMap<QPair<int, int>, int> &newDuration_count)
+inline void StatsData::setDuration_count(const QMap<int, int> &newDuration_count)
 {
     if (duration_count_ == newDuration_count)
         return;

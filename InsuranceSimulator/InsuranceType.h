@@ -39,7 +39,7 @@ private:
 
 inline void InsuranceType::offersChanged() {
     StatsData stats;
-    QMap<QPair<int, int>, int> duration;
+    QMap<int, int> duration;
     for(int i = 0; i < offers_.size(); ++i) {
         stats.setTotal_customers_count(stats.total_customers_count() + offers_[i].stats().total_customers_count());
         stats.setMonth_customers_count(stats.month_customers_count() + offers_[i].stats().month_customers_count());
@@ -48,12 +48,15 @@ inline void InsuranceType::offersChanged() {
         stats.setTotal_payment_amount(stats.total_payment_amount() + offers_[i].stats().total_payment_amount());
         stats.setMonth_payment_amount(stats.month_payment_amount() + offers_[i].stats().month_payment_amount());
 
-        for(auto& k : offers_[i].stats().duration_count().keys()) {
-            int count = offers_[i].stats().duration_count().value(k);
+
+        auto durations = offers_[i].stats().duration_count();
+        for(auto& k : durations.keys()) {
+            int count = durations.value(k);
             duration[k] += count;
         }
     }
     stats.setDuration_count(duration);
+    setStats(stats);
 }
 
 inline QVector<InsuranceOffer> InsuranceType::offers() const

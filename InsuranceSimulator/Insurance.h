@@ -42,7 +42,7 @@ private:
     struct event {
         int type;
         double amount_diff;
-        event(int type_, int amount_diff_) {
+        event(int type_, double amount_diff_) {
             type = type_;
             amount_diff = amount_diff_;
         }
@@ -51,7 +51,7 @@ private:
 
 inline void Insurance::insurancesChanged() {
     StatsData stats;
-    QMap<QPair<int, int>, int> duration;
+    QMap<int, int> duration;
     for(int i = 0; i < insurances_.size(); ++i) {
         stats.setTotal_customers_count(stats.total_customers_count() + insurances_[i].stats().total_customers_count());
         stats.setMonth_customers_count(stats.month_customers_count() + insurances_[i].stats().month_customers_count());
@@ -60,12 +60,14 @@ inline void Insurance::insurancesChanged() {
         stats.setTotal_payment_amount(stats.total_payment_amount() + insurances_[i].stats().total_payment_amount());
         stats.setMonth_payment_amount(stats.month_payment_amount() + insurances_[i].stats().month_payment_amount());
 
-        for(auto& k : insurances_[i].stats().duration_count().keys()) {
-            int count = insurances_[i].stats().duration_count().value(k);
+        auto durations = insurances_[i].stats().duration_count();
+        for(auto& k : durations.keys()) {
+            int count = durations.value(k);
             duration[k] += count;
         }
     }
     stats.setDuration_count(duration);
+    setStats(stats);
 }
 
 inline QVector<InsuranceType> Insurance::insurances() const
@@ -138,31 +140,43 @@ void Insurance::emulate() {
     for(int i = 0; i < insurs.size(); ++i) {
         auto offers = insurs[i].offers();
 
-        QVector<event> events;
+        QVector<event> events; // события
 
-        int insurance_events = Random::get(insurs[i].insured_events_range().first, insurs[i].insured_events_range().second);
-        QVector<int> pref_sums;
+        int insurance_events = Random::get(insurs[i].insured_events_range().first, insurs[i].insured_events_range().second); // кол-во страховых случаев
+        QVector<int> pref_sums; // префикс-суммы для определения предложения страховки
         pref_sums.push_back(offers[0].stats().total_customers_count());
         for(int j = 1; j < offers.size(); ++j) {
             pref_sums.push_back(pref_sums[pref_sums.size() - 1] + offers[j].stats().total_customers_count());
         }
-        // + random shuffle
 
         for(int j = 0; j < insurance_events; ++j) {
-            int _rnd = Random::get(0, pref_sums[pref_sums.size() - 1]);
+            int _rnd = Random::get(0, pref_sums[pref_sums.size() - 1]); // рандомный номер клиента
 
-            int L = -1, R = pref_sums.size(), M;
+            int L = -1, R = pref_sums.size(), M; // ищем предложение
             while (L < R - 1) {
                 M = L + (R - L) / 2;
                 if (pref_sums[M] <= _rnd) L = M;
                 else R = M;
             }
 
-            double coeff = Random::get(0.0, 1.0);
-            int ind = min(max(L, 0), offers.size() - 1);
-            double amount = offers[ind].max_reimbursement_amount() * coeff;
-            if (amount < offers[ind].franchise()) continue;
-            events.push_back(event(1, amount));
+            double coeff = Random::get(0.0, 1.0); // коэффициент ущерба
+            int ind = fmin(fmax(L, 0), offers.size() - 1); // L - номер предложения, в котором произошел страховой случай, ind нормирован
+            double amount = offers[ind].max_reimbursement_amount() * coeff; // сумма для возмещения
+            if (amount < offers[ind].franchise()) continue; // если франшиза больше, то не добавляем событие
+            events.push_back(event(1, amount)); // Тип 1 - страховое возмещение
+        }
+
+        for(int j = 0; j < offers.size(); ++j) { // Добавляем новых пользователей
+            int new_customers_count = sqrt(sqrt(offers[j].stats().total_customers_count())) * Random::get(0, 5) *
+                    offers[j].max_reimbursement_amount() / offers[j].duration() / offers[j].contribution_amount(); // TODO: добавить разность с рынком
+            for(int k = 0; k < new_customers_count; ++k) {
+                events.push_back(event(2, offers[j].contribution_amount()));
+            }
+            StatsData prevStats = offers[j].stats();
+            auto prevDuration = prevStats.duration_count();
+            prevDuration[offers[j].contribution_period() + 1] += new_customers_count;
+            prevStats.setDuration_count(prevDuration);
+            offers[j].setStats(prevStats);
         }
 
         for(int j = 0; j < offers.size(); ++j) {
@@ -171,10 +185,20 @@ void Insurance::emulate() {
             prev_stats.setMonth_revenue(0);
             prev_stats.setMonth_customers_count(0);
             prev_stats.setMonth_payment_amount(0);
+
+            QMap<int, int> nextDuration;
+            auto prevDuration = prev_stats.duration_count();
+            for(auto& k : prevDuration.keys()) {
+                int count = prevDuration.value(k);
+                if (k == 1) continue;
+                nextDuration[k - 1] += count;
+            }
+            prev_stats.setDuration_count(nextDuration);
             offers[j].setStats(prev_stats);
         }
 
-        // adding new customers sqrt(sqrt(customers)) * rnd(0, 50) * выгода
+        std::random_shuffle(events.begin(), events.end());
+        events.push_front(event(0, capital() * tax_percentage())); // 0 - налог гос-ву
 
         for(int j = 0; j < offers.size(); ++j) {
             QMap<int, int> next_duration;
