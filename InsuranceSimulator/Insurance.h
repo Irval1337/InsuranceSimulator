@@ -42,9 +42,11 @@ private:
     struct event {
         int type;
         double amount_diff;
-        event(int type_, double amount_diff_) {
+        int offer;
+        event(int type_, double amount_diff_, int offer_) {
             type = type_;
             amount_diff = amount_diff_;
+            offer = offer_;
         }
     };
 };
@@ -142,7 +144,7 @@ void Insurance::emulate() {
 
         QVector<event> events; // события
 
-        int insurance_events = Random::get(insurs[i].insured_events_range().first, insurs[i].insured_events_range().second); // кол-во страховых случаев
+        int insurance_events = Random::get(insurs[i].insured_events_range().first, insurs[i].insured_events_range().second) % stats().total_customers_count(); // кол-во страховых случаев
         QVector<int> pref_sums; // префикс-суммы для определения предложения страховки
         pref_sums.push_back(offers[0].stats().total_customers_count());
         for(int j = 1; j < offers.size(); ++j) {
@@ -163,14 +165,15 @@ void Insurance::emulate() {
             int ind = fmin(fmax(L, 0), offers.size() - 1); // L - номер предложения, в котором произошел страховой случай, ind нормирован
             double amount = offers[ind].max_reimbursement_amount() * coeff; // сумма для возмещения
             if (amount < offers[ind].franchise()) continue; // если франшиза больше, то не добавляем событие
-            events.push_back(event(1, amount)); // Тип 1 - страховое возмещение
+            events.push_back(event(1, amount, ind)); // Тип 1 - страховое возмещение
         }
 
         for(int j = 0; j < offers.size(); ++j) { // Добавляем новых пользователей
+            if (!offers[j].enabled()) continue;
             int new_customers_count = sqrt(sqrt(offers[j].stats().total_customers_count())) * Random::get(0, 5) *
                     offers[j].max_reimbursement_amount() / offers[j].duration() / offers[j].contribution_amount(); // TODO: добавить разность с рынком
             for(int k = 0; k < new_customers_count; ++k) {
-                events.push_back(event(2, offers[j].contribution_amount()));
+                events.push_back(event(2, offers[j].contribution_amount(), j)); // Тип 2 - новый пользователь
             }
             StatsData prevStats = offers[j].stats();
             auto prevDuration = prevStats.duration_count();
@@ -179,44 +182,59 @@ void Insurance::emulate() {
             offers[j].setStats(prevStats);
         }
 
+        std::random_shuffle(events.begin(), events.end());
+        events.push_front(event(0, capital() * tax_percentage(), -1)); // 0 - налог гос-ву
+
+        StatsData newStats = stats();
+        newStats.setMonth_customers_count(0);
+        newStats.setMonth_payment_amount(0);
+        newStats.setMonth_revenue(0);
+
+        for(int j = 0; j < events.size(); ++j) {
+            double diff = events[j].amount_diff;
+            int offer = events[j].offer;
+            if (events[j].type == 0) { // налог
+                newStats.setMonth_revenue(newStats.month_revenue() + diff);
+                setCapital(capital() - diff);
+            } else if (events[j].type == 1) { // выплата
+                auto prevStats = offers[j].stats();
+                prevStats.setMonth_revenue(prevStats.month_revenue() + diff);
+                offers[j].setStats(prevStats);
+                setCapital(capital() - diff);
+            } else { // новый пользователь
+                auto prevStats = offers[j].stats();
+                prevStats.setMonth_payment_amount(prevStats.month_payment_amount() + diff);
+                prevStats.setMonth_customers_count(prevStats.month_customers_count() + 1);
+                offers[j].setStats(prevStats);
+                setCapital(capital() + diff);
+            }
+
+            if (capital() < 0) {
+                setBanned(true);
+            }
+        }
+
         for(int j = 0; j < offers.size(); ++j) {
             offers[j].setRelevance_period(offers[j].relevance_period() - 1);
-            auto prev_stats = offers[j].stats();
-            prev_stats.setMonth_revenue(0);
-            prev_stats.setMonth_customers_count(0);
-            prev_stats.setMonth_payment_amount(0);
+            if (offers[j].relevance_period() == 0) offers[j].setEnabled(false);
 
+            auto prev_stats = offers[j].stats();
             QMap<int, int> nextDuration;
             auto prevDuration = prev_stats.duration_count();
             for(auto& k : prevDuration.keys()) {
                 int count = prevDuration.value(k);
-                if (k == 1) continue;
+                if (k == 1) {
+                    prev_stats.setMonth_customers_count(prev_stats.month_customers_count() - count);
+                }
                 nextDuration[k - 1] += count;
             }
             prev_stats.setDuration_count(nextDuration);
             offers[j].setStats(prev_stats);
+            if (nextDuration.empty() && !offers[j].enabled())
+                offers.erase(offers.begin() + j);
         }
 
-        std::random_shuffle(events.begin(), events.end());
-        events.push_front(event(0, capital() * tax_percentage())); // 0 - налог гос-ву
-
-        for(int j = 0; j < offers.size(); ++j) {
-            QMap<int, int> next_duration;
-            auto stats = offers[j].stats();
-            stats.setMonth_customers_count(0);
-            for(auto& k : offers[j].stats().duration_count().keys()) {
-                int count = offers[j].stats().duration_count().value(k);
-                if (k == 1) {
-                    stats.setMonth_customers_count(stats.month_customers_count() - count);
-                    stats.setTotal_customers_count(stats.total_customers_count() - count);
-                } else {
-                    next_duration[k - 1] += count;
-                }
-            }
-            stats.setDuration_count(next_duration);
-            offers[i].se
-        }
-
-        events.push_front(-capital() * tax_percentage());
+        insurs[i].setOffers(offers);
     }
+    setInsurances(insurs);
 }
