@@ -1,5 +1,5 @@
 QT       += core gui
-QT       += widgets
+QT       += widgets charts
 greaterThan(QT_MAJOR_VERSION, X): QT += widgets
 
 CONFIG += c++17
