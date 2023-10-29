@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>532</width>
-    <height>391</height>
+    <width>501</width>
+    <height>432</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,22 +20,12 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QListView" name="listView">
-    <property name="geometry">
-     <rect>
-      <x>11</x>
-      <y>80</y>
-      <width>231</width>
-      <height>171</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QPushButton" name="pushButton_3">
     <property name="geometry">
      <rect>
-      <x>11</x>
-      <y>260</y>
-      <width>51</width>
+      <x>10</x>
+      <y>380</y>
+      <width>71</width>
       <height>24</height>
      </rect>
     </property>
@@ -43,12 +33,12 @@
      <string>Назад</string>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLabel" name="infoLabel">
     <property name="geometry">
      <rect>
-      <x>11</x>
-      <y>60</y>
-      <width>181</width>
+      <x>10</x>
+      <y>10</y>
+      <width>201</width>
       <height>16</height>
      </rect>
     </property>
@@ -59,8 +49,8 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>270</x>
-      <y>20</y>
+      <x>260</x>
+      <y>90</y>
       <width>111</width>
       <height>16</height>
      </rect>
@@ -73,7 +63,7 @@
     <property name="geometry">
      <rect>
       <x>170</x>
-      <y>260</y>
+      <y>380</y>
       <width>71</width>
       <height>24</height>
      </rect>
@@ -82,66 +72,44 @@
      <string>Добавить</string>
     </property>
    </widget>
-   <widget class="QListView" name="listView_2">
-    <property name="geometry">
-     <rect>
-      <x>270</x>
-      <y>40</y>
-      <width>251</width>
-      <height>61</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLineEdit" name="lineEdit">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>20</y>
+      <x>260</x>
+      <y>30</y>
       <width>111</width>
       <height>24</height>
      </rect>
     </property>
     <property name="text">
-     <string>         1600$</string>
+     <string>1600$</string>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit_2">
     <property name="geometry">
      <rect>
-      <x>130</x>
-      <y>20</y>
+      <x>380</x>
+      <y>30</y>
       <width>111</width>
       <height>24</height>
      </rect>
     </property>
     <property name="text">
-     <string>         9</string>
+     <string>9</string>
     </property>
-   </widget>
-   <widget class="QLineEdit" name="lineEdit_3">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>324</y>
-      <width>511</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>8</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Очень интересные новости в бегущей строке</string>
+    <property name="readOnly">
+     <bool>true</bool>
     </property>
    </widget>
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>270</x>
-      <y>110</y>
-      <width>251</width>
+      <x>260</x>
+      <y>230</y>
+      <width>231</width>
       <height>171</height>
      </rect>
     </property>
@@ -153,33 +121,39 @@
       <rect>
        <x>10</x>
        <y>40</y>
-       <width>231</width>
+       <width>211</width>
        <height>16</height>
       </rect>
+     </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <number>31</number>
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="periodLabel">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>53</y>
-       <width>231</width>
+       <width>211</width>
        <height>20</height>
       </rect>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;1 месяц&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;1 месяцев&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton">
      <property name="geometry">
       <rect>
-       <x>130</x>
+       <x>120</x>
        <y>100</y>
-       <width>111</width>
+       <width>101</width>
        <height>24</height>
       </rect>
      </property>
@@ -187,17 +161,17 @@
       <string>Вперед</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="QPushButton" name="nextNmonths">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>130</y>
-       <width>231</width>
+       <width>211</width>
        <height>24</height>
       </rect>
      </property>
      <property name="text">
-      <string>Вперед на 17 месяцев</string>
+      <string>Вперед на 1 месяцев</string>
      </property>
     </widget>
     <widget class="QPushButton" name="pushButton_5">
@@ -205,7 +179,7 @@
       <rect>
        <x>10</x>
        <y>100</y>
-       <width>111</width>
+       <width>101</width>
        <height>24</height>
       </rect>
      </property>
@@ -214,44 +188,106 @@
      </property>
     </widget>
    </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>10</y>
+      <width>201</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Общая информация о компании</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_6">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>60</y>
+      <width>71</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Статистика</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_7">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>60</y>
+      <width>71</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>История</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_8">
+    <property name="geometry">
+     <rect>
+      <x>420</x>
+      <y>60</y>
+      <width>71</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Настройки</string>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="listWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>231</width>
+      <height>341</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="listWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>110</y>
+      <width>231</width>
+      <height>111</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>380</y>
+      <width>71</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Изменить</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>532</width>
+     <width>501</width>
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu">
-    <property name="title">
-     <string>Статистика</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menu_2">
-    <property name="title">
-     <string>Налоги</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menu_3">
-    <property name="title">
-     <string>История</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menu_5">
-    <property name="title">
-     <string>Файл</string>
-    </property>
-    <addaction name="action_8"/>
-    <addaction name="action_6"/>
-    <addaction name="action_7"/>
-    <addaction name="action_5"/>
-   </widget>
-   <addaction name="menu_5"/>
-   <addaction name="menu"/>
-   <addaction name="menu_2"/>
-   <addaction name="menu_3"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action">

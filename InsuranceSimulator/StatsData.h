@@ -1,6 +1,5 @@
 #pragma once
 
-#include "qtmetamacros.h"
 #include <QMap>
 
 class StatsData {
@@ -12,6 +11,7 @@ public:
         month_revenue_ = 0;
         total_payment_amount_ = 0;
         month_payment_amount_ = 0;
+        duration_count_ = QMap<int, int>();
     }
 
     int total_customers_count() const;
@@ -32,21 +32,15 @@ public:
     bool operator==(const StatsData& other) const {
         return total_customers_count_ == other.total_customers_count_ &&
                 month_customers_count_ == other.month_customers_count_ &&
-                total_revenue_ == other.total_revenue_ &&
-                month_revenue_ == other.month_revenue_ &&
-                total_payment_amount_ == other.total_payment_amount_ &&
-                month_payment_amount_ == other.month_payment_amount_ &&
+                qFuzzyCompare(total_revenue_, other.total_revenue_) &&
+                qFuzzyCompare(month_revenue_, other.month_revenue_) &&
+                qFuzzyCompare(total_payment_amount_, other.total_payment_amount_) &&
+                qFuzzyCompare(month_payment_amount_, other.month_payment_amount_) &&
                 duration_count_ == other.duration_count_;
     }
-
-signals:
-    void total_customers_countChanged();
-    void month_customers_countChanged();
-    void total_revenueChanged();
-    void month_revenueChanged();
-    void total_payment_amountChanged();
-    void month_payment_amountChanged();
-    void duration_countChanged();
+    bool operator!=(const StatsData& other) const {
+        return !(*this == other);
+    }
 
 private:
     int total_customers_count_; // количество покупателей
@@ -57,14 +51,6 @@ private:
     double month_payment_amount_; // сумма выплат за последний месяц
 
     QMap<int, int> duration_count_; // сроки страховки текущих пользователей
-
-    Q_PROPERTY(int total_customers_count READ total_customers_count WRITE setTotal_customers_count NOTIFY total_customers_countChanged)
-    Q_PROPERTY(int month_customers_count READ month_customers_count WRITE setMonth_customers_count NOTIFY month_customers_countChanged)
-    Q_PROPERTY(double total_revenue READ total_revenue WRITE setTotal_revenue NOTIFY total_revenueChanged)
-    Q_PROPERTY(double month_revenue READ month_revenue WRITE setMonth_revenue NOTIFY month_revenueChanged)
-    Q_PROPERTY(double total_payment_amount READ total_payment_amount WRITE setTotal_payment_amount NOTIFY total_payment_amountChanged)
-    Q_PROPERTY(double month_payment_amount READ month_payment_amount WRITE setMonth_payment_amount NOTIFY month_payment_amountChanged)
-    Q_PROPERTY(QMap<int, int> duration_count READ duration_count WRITE setDuration_count NOTIFY duration_countChanged)
 };
 
 inline int StatsData::total_customers_count() const
@@ -77,7 +63,6 @@ inline void StatsData::setTotal_customers_count(int newTotal_customers_count)
     if (total_customers_count_ == newTotal_customers_count)
         return;
     total_customers_count_ = newTotal_customers_count;
-    emit total_customers_countChanged();
 }
 
 inline int StatsData::month_customers_count() const
@@ -89,8 +74,8 @@ inline void StatsData::setMonth_customers_count(int newMonth_customers_count)
 {
     if (month_customers_count_ == newMonth_customers_count)
         return;
+    setTotal_customers_count(total_customers_count_ + newMonth_customers_count);
     month_customers_count_ = newMonth_customers_count;
-    emit month_customers_countChanged();
 }
 
 inline double StatsData::total_revenue() const
@@ -103,7 +88,6 @@ inline void StatsData::setTotal_revenue(double newTotal_revenue)
     if (qFuzzyCompare(total_revenue_, newTotal_revenue))
         return;
     total_revenue_ = newTotal_revenue;
-    emit total_revenueChanged();
 }
 
 inline double StatsData::month_revenue() const
@@ -115,8 +99,8 @@ inline void StatsData::setMonth_revenue(double newMonth_revenue)
 {
     if (qFuzzyCompare(month_revenue_, newMonth_revenue))
         return;
+    setTotal_revenue(total_revenue_ + newMonth_revenue);
     month_revenue_ = newMonth_revenue;
-    emit month_revenueChanged();
 }
 
 inline double StatsData::total_payment_amount() const
@@ -129,7 +113,6 @@ inline void StatsData::setTotal_payment_amount(double newTotal_payment_amount)
     if (qFuzzyCompare(total_payment_amount_, newTotal_payment_amount))
         return;
     total_payment_amount_ = newTotal_payment_amount;
-    emit total_payment_amountChanged();
 }
 
 inline double StatsData::month_payment_amount() const
@@ -141,8 +124,8 @@ inline void StatsData::setMonth_payment_amount(double newMonth_payment_amount)
 {
     if (qFuzzyCompare(month_payment_amount_, newMonth_payment_amount))
         return;
+    setTotal_payment_amount(total_payment_amount_ + newMonth_payment_amount);
     month_payment_amount_ = newMonth_payment_amount;
-    emit month_payment_amountChanged();
 }
 
 inline QMap<int, int> StatsData::duration_count() const
@@ -155,7 +138,6 @@ inline void StatsData::setDuration_count(const QMap<int, int> &newDuration_count
     if (duration_count_ == newDuration_count)
         return;
     duration_count_ = newDuration_count;
-    emit duration_countChanged();
 }
 
 template<class T>

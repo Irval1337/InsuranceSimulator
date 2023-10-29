@@ -23,22 +23,19 @@ public:
     void setRelevance_period(int newRelevance_period);
     StatsData stats() const;
     void setStats(const StatsData &newStats);
-
     bool enabled() const;
     void setEnabled(bool newEnabled);
 
-signals:
-    void contribution_amountChanged();
-    void contribution_periodChanged();
-    void durationChanged();
-    void max_reimbursement_amountChanged();
-    void franchiseChanged();
-    void insurance_company_nameChanged();
-    void insurance_typeChanged();
-    void relevance_periodChanged();
-    void statsChanged();
-
-    void enabledChanged();
+    bool operator==(const InsuranceOffer& other) const {
+        return enabled_ == other.enabled_ && qFuzzyCompare(contribution_amount_, other.contribution_amount_) &&
+                contribution_period_ == other.contribution_period_ && duration_ == other.duration_ &&
+                qFuzzyCompare(max_reimbursement_amount_, other.max_reimbursement_amount_) && qFuzzyCompare(franchise_, other.franchise_) &&
+                insurance_company_name_ == other.insurance_company_name_ && insurance_type_ == other.insurance_type_ &&
+                relevance_period_ == other.relevance_period_ && stats_ == other.stats_;
+    }
+    bool operator!=(const InsuranceOffer& other) const {
+        return !(*this == other);
+    }
 
 private:
     bool enabled_; // предоставляется ли эта услуга
@@ -51,23 +48,7 @@ private:
     QString insurance_type_; // общий тип, к которому относится это предложение (авто/здоровье/жилье)
     int relevance_period_; // сколько еще месяцев предложение актуально
     StatsData stats_; // общая информация о клиентах
-
-    Q_PROPERTY(double contribution_amount READ contribution_amount WRITE setContribution_amount NOTIFY contribution_amountChanged)
-    Q_PROPERTY(int contribution_period READ contribution_period WRITE setContribution_period NOTIFY contribution_periodChanged)
-    Q_PROPERTY(int duration READ duration WRITE setDuration NOTIFY durationChanged)
-    Q_PROPERTY(double max_reimbursement_amount READ max_reimbursement_amount WRITE setMax_reimbursement_amount NOTIFY max_reimbursement_amountChanged)
-    Q_PROPERTY(double franchise READ franchise WRITE setFranchise NOTIFY franchiseChanged)
-    Q_PROPERTY(QString insurance_company_name READ insurance_company_name WRITE setInsurance_company_name NOTIFY insurance_company_nameChanged)
-    Q_PROPERTY(QString insurance_type READ insurance_type WRITE setInsurance_type NOTIFY insurance_typeChanged)
-    Q_PROPERTY(int relevance_period READ relevance_period WRITE setRelevance_period NOTIFY relevance_periodChanged)
-    Q_PROPERTY(StatsData stats READ stats WRITE setStats NOTIFY statsChanged)
-    Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
 };
-
-void InsuranceOffer::relevance_periodChanged() {
-    if (relevance_period_ == 0)
-        setEnabled(false);
-}
 
 inline double InsuranceOffer::contribution_amount() const
 {
@@ -79,7 +60,6 @@ inline void InsuranceOffer::setContribution_amount(double newContribution_amount
     if (contribution_amount_ == newContribution_amount)
         return;
     contribution_amount_ = newContribution_amount;
-    emit contribution_amountChanged();
 }
 
 inline int InsuranceOffer::contribution_period() const
@@ -92,7 +72,6 @@ inline void InsuranceOffer::setContribution_period(int newContribution_period)
     if (contribution_period_ == newContribution_period)
         return;
     contribution_period_ = newContribution_period;
-    emit contribution_periodChanged();
 }
 
 inline int InsuranceOffer::duration() const
@@ -105,7 +84,6 @@ inline void InsuranceOffer::setDuration(int newDuration)
     if (duration_ == newDuration)
         return;
     duration_ = newDuration;
-    emit durationChanged();
 }
 
 inline double InsuranceOffer::max_reimbursement_amount() const
@@ -118,7 +96,6 @@ inline void InsuranceOffer::setMax_reimbursement_amount(double newMax_reimbursem
     if (qFuzzyCompare(max_reimbursement_amount_, newMax_reimbursement_amount))
         return;
     max_reimbursement_amount_ = newMax_reimbursement_amount;
-    emit max_reimbursement_amountChanged();
 }
 
 inline double InsuranceOffer::franchise() const
@@ -131,7 +108,6 @@ inline void InsuranceOffer::setFranchise(double newFranchise)
     if (qFuzzyCompare(franchise_, newFranchise))
         return;
     franchise_ = newFranchise;
-    emit franchiseChanged();
 }
 
 inline QString InsuranceOffer::insurance_company_name() const
@@ -144,7 +120,6 @@ inline void InsuranceOffer::setInsurance_company_name(const QString &newInsuranc
     if (insurance_company_name_ == newInsurance_company_name)
         return;
     insurance_company_name_ = newInsurance_company_name;
-    emit insurance_company_nameChanged();
 }
 
 inline QString InsuranceOffer::insurance_type() const
@@ -157,7 +132,6 @@ inline void InsuranceOffer::setInsurance_type(const QString &newInsurance_type)
     if (insurance_type_ == newInsurance_type)
         return;
     insurance_type_ = newInsurance_type;
-    emit insurance_typeChanged();
 }
 
 inline int InsuranceOffer::relevance_period() const
@@ -170,7 +144,8 @@ inline void InsuranceOffer::setRelevance_period(int newRelevance_period)
     if (relevance_period_ == newRelevance_period)
         return;
     relevance_period_ = newRelevance_period;
-    emit relevance_periodChanged();
+    if (relevance_period_ == 0)
+        setEnabled(false);
 }
 
 inline StatsData InsuranceOffer::stats() const
@@ -183,7 +158,6 @@ inline void InsuranceOffer::setStats(const StatsData &newStats)
     if (stats_ == newStats)
         return;
     stats_ = newStats;
-    emit statsChanged();
 }
 
 inline bool InsuranceOffer::enabled() const
@@ -196,5 +170,4 @@ inline void InsuranceOffer::setEnabled(bool newEnabled)
     if (enabled_ == newEnabled)
         return;
     enabled_ = newEnabled;
-    emit enabledChanged();
 }
