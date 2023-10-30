@@ -108,51 +108,19 @@
     <property name="geometry">
      <rect>
       <x>260</x>
-      <y>230</y>
+      <y>240</y>
       <width>231</width>
-      <height>171</height>
+      <height>151</height>
      </rect>
     </property>
     <property name="title">
      <string>Эмуляция</string>
     </property>
-    <widget class="QSlider" name="horizontalSlider">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>40</y>
-       <width>211</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="minimum">
-      <number>1</number>
-     </property>
-     <property name="maximum">
-      <number>1000</number>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-    <widget class="QLabel" name="periodLabel">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>53</y>
-       <width>211</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;1 месяцев&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="pushButton">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>100</y>
+       <y>80</y>
        <width>211</width>
        <height>24</height>
       </rect>
@@ -165,13 +133,23 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>130</y>
+       <y>110</y>
        <width>211</width>
        <height>24</height>
       </rect>
      </property>
      <property name="text">
-      <string>Вперед на 1 месяцев</string>
+      <string>Вперед на N месяцев</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="lineEdit_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>211</width>
+       <height>24</height>
+      </rect>
      </property>
     </widget>
    </widget>

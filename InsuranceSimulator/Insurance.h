@@ -40,10 +40,10 @@ private:
     bool banned_; // обонкротились или нет
 
     struct event {
-        int type;
+        long long type;
         double amount_diff;
-        int offer;
-        event(int type_, double amount_diff_, int offer_) {
+        long long offer;
+        event(long long type_, double amount_diff_, long long offer_) {
             type = type_;
             amount_diff = amount_diff_;
             offer = offer_;
@@ -75,7 +75,7 @@ inline bool Insurance::open(QString path) {
             type.setEnabled(true);
             type.setInsurance_type(obj["insurance_type"].toString());
             type.setInsured_events_range({obj["insured_events_min"].toDouble(), obj["insured_events_max"].toDouble()});
-            type.setPotential_customers_count(obj["potential_customers_count"].toInt());
+            type.setPotential_customers_count(obj["potential_customers_count"].tolong long());
 
             QJsonArray offers_arr = obj["offers"].toArray();
             QVector<InsuranceOffer> offers;
@@ -84,13 +84,13 @@ inline bool Insurance::open(QString path) {
                 InsuranceOffer offer;
                 offer.setEnabled(true);
                 offer.setContribution_amount(ob["contribution_amount"].toDouble());
-                offer.setContribution_period(ob["contribution_period"].toInt());
-                offer.setDuration(ob["duration"].toInt());
+                offer.setContribution_period(ob["contribution_period"].tolong long());
+                offer.setDuration(ob["duration"].tolong long());
                 offer.setMax_reimbursement_amount(ob["max_reimbursement_amount"].toDouble());
                 offer.setFranchise(ob["franchise"].toDouble());
                 offer.setInsurance_company_name(ob["insurance_company_name"].toString());
                 offer.setInsurance_type(type.insurance_type());
-                offer.setRelevance_period(ob["relevance_period"].toInt());
+                offer.setRelevance_period(ob["relevance_period"].tolong long());
                 offers.push_back(offer);
             }
             type.setOffers(offers);
@@ -165,17 +165,17 @@ inline void Insurance::setInsurances(const QVector<InsuranceType> &newInsurances
     insurances_ = newInsurances;
 
     StatsData stats = stats_;
-    int customers = 0, payment = 0, revenue = 0;
+    long long customers = 0, payment = 0, revenue = 0;
 
-    QMap<int, int> duration;
-    for(int i = 0; i < insurances_.size(); ++i) {
+    QMap<long long, long long> duration;
+    for(long long i = 0; i < insurances_.size(); ++i) {
         customers += insurances_[i].stats().month_customers_count();
         payment += insurances_[i].stats().month_payment_amount();
         revenue += insurances_[i].stats().month_revenue();
 
         auto durations = insurances_[i].stats().duration_count();
         for(auto& k : durations.keys()) {
-            int count = durations.value(k);
+            long long count = durations.value(k);
             duration[k] += count;
         }
     }
@@ -239,14 +239,19 @@ inline double sqr(double x) {
 }
 
 inline void Insurance::emulate(QVector<QString>* hist) {
+    hist->push_back("Налог гос-ву - " + QString::number(capital() * tax_percentage(), 'g', 10));
     setCapital(capital() - capital() * tax_percentage());
     auto insurs = insurances();
     QVector<InsuranceType> _ins = QVector<InsuranceType>();
-    for(int i = 0; i < insurs.size(); ++i) {
+    for(long long i = 0; i < insurs.size(); ++i) {
         auto offers = insurs[i].offers();
-        int prev = insurs[i].potential_customers_count();
+        long long prev = insurs[i].potential_customers_count();
         insurs[i].setPotential_customers_count(ceil(insurs[i].potential_customers_count() + (-1 + 2 * (Random::get(1, 100) % 2)) *
                                                (sqrt(insurs[i].potential_customers_count()) + 1) * Random::get(1.0, log(insurs[i].potential_customers_count()))));
+
+        if (insurs[i].potential_customers_count() <= 0) {
+            insurs[i].setPotential_customers_count(prev * Random::get(1.0, 2.0));
+        }
 
         if (offers.empty()) {
             if (insurs[i].stats().total_customers_count() == 0 && !insurs[i].enabled())
@@ -257,21 +262,21 @@ inline void Insurance::emulate(QVector<QString>* hist) {
 
         QVector<event> events; // события
 
-        int insurance_events = 0; // кол-во страховых случаев
+        long long insurance_events = 0; // кол-во страховых случаев
         if (stats().total_customers_count() != 0)
-            insurance_events = (int)(ceil(Random::get(insurs[i].insured_events_range().first, insurs[i].insured_events_range().second) *
+            insurance_events = (long long)(ceil(Random::get(insurs[i].insured_events_range().first, insurs[i].insured_events_range().second) *
                             ((double)stats().total_customers_count() / 1000.0))) % stats().total_customers_count();
         if (!offers.empty()) {
-            QVector<int> pref_sums; // префикс-суммы для определения предложения страховки
+            QVector<long long> pref_sums; // префикс-суммы для определения предложения страховки
             pref_sums.push_back(offers[0].stats().total_customers_count());
-            for(int j = 1; j < offers.size(); ++j) {
+            for(long long j = 1; j < offers.size(); ++j) {
                 pref_sums.push_back(pref_sums[pref_sums.size() - 1] + offers[j].stats().total_customers_count());
             }
 
-            for(int j = 0; j < insurance_events; ++j) {
-                int _rnd = Random::get(0, pref_sums[pref_sums.size() - 1]); // рандомный номер клиента
+            for(long long j = 0; j < insurance_events; ++j) {
+                long long _rnd = Random::get(0, pref_sums[pref_sums.size() - 1]); // рандомный номер клиента
 
-                int L = -1, R = pref_sums.size(), M; // ищем предложение
+                long long L = -1, R = pref_sums.size(), M; // ищем предложение
                 while (L < R - 1) {
                     M = L + (R - L) / 2;
                     if (pref_sums[M] <= _rnd) L = M;
@@ -279,7 +284,7 @@ inline void Insurance::emulate(QVector<QString>* hist) {
                 }
 
                 double coeff = Random::get(0.0, 1.0); // коэффициент ущерба
-                int ind = fmin(fmax(L, 0), offers.size() - 1); // L - номер предложения, в котором произошел страховой случай, ind нормирован
+                long long ind = fmin(fmax(L, 0), offers.size() - 1); // L - номер предложения, в котором произошел страховой случай, ind нормирован
                 double amount = offers[ind].max_reimbursement_amount() * coeff; // сумма для возмещения
                 if (amount < offers[ind].franchise()) continue; // если франшиза больше, то не добавляем событие
                 events.push_back(event(1, amount, ind)); // Тип 1 - страховое возмещение
@@ -287,10 +292,10 @@ inline void Insurance::emulate(QVector<QString>* hist) {
             }
         }
 
-        for(int j = 0; j < offers.size(); ++j) { // Периодичные выплаты
+        for(long long j = 0; j < offers.size(); ++j) { // Периодичные выплаты
             for(auto& u : offers[j].stats().duration_count().keys()) {
-                int count = offers[j].stats().duration_count().value(u);
-                for(int k = 0; k < count; ++k) {
+                long long count = offers[j].stats().duration_count().value(u);
+                for(long long k = 0; k < count; ++k) {
                     if (u != 1 && (offers[j].duration() - u - 1) % offers[j].contribution_period() == 0) {
                         events.push_back(event(3, offers[j].contribution_amount(), j)); // Тип 3 - выплата
                     }
@@ -300,9 +305,9 @@ inline void Insurance::emulate(QVector<QString>* hist) {
             }
         }
 
-        for(int j = 0; j < offers.size(); ++j) { // Добавляем новых пользователей
+        for(long long j = 0; j < offers.size(); ++j) { // Добавляем новых пользователей
             if (!offers[j].enabled() || insurs[i].potential_customers_count() == 0) continue;
-            int new_customers_count = ((int)sqrt(sqrt(offers[j].stats().total_customers_count())) + 1) * Random::get(0.0, 2.0)
+            long long new_customers_count = ((long long)sqrt(sqrt(offers[j].stats().total_customers_count())) + 1) * Random::get(0.0, 2.0)
                                             * offers[j].max_reimbursement_amount() / offers[j].duration() / offers[j].contribution_amount() *
                                             sqr(log2(prev) + 1) + 1; // TODO: добавить разность с рынком
             if (new_customers_count > prev && new_customers_count % prev < prev / 2)
@@ -310,7 +315,7 @@ inline void Insurance::emulate(QVector<QString>* hist) {
             insurs[i].setPotential_customers_count(insurs[i].potential_customers_count() - new_customers_count);
             prev -= new_customers_count;
             hist->push_back("Новые клиенты по " + offers[j].insurance_company_name() + " - " + QString::number(new_customers_count));
-            for(int k = 0; k < new_customers_count; ++k) {
+            for(long long k = 0; k < new_customers_count; ++k) {
                 events.push_back(event(2, offers[j].contribution_amount(), j)); // Тип 2 - новый пользователь
             }
             StatsData prevStats = offers[j].stats();
@@ -322,11 +327,11 @@ inline void Insurance::emulate(QVector<QString>* hist) {
 
         std::random_shuffle(events.begin(), events.end());
 
-        QVector<QPair<int, QPair<double, double>>> changed_stats(offers.size(), {0, {0, 0}});
+        QVector<QPair<long long, QPair<double, double>>> changed_stats(offers.size(), {0, {0, 0}});
 
-        for(int j = 0; j < events.size(); ++j) {
+        for(long long j = 0; j < events.size(); ++j) {
             double diff = events[j].amount_diff;
-            int offer = events[j].offer;
+            long long offer = events[j].offer;
             if (events[j].type == 0) { // налог
                 setCapital(capital() - diff);
             } else if (events[j].type == 1) { // выплата
@@ -348,7 +353,7 @@ inline void Insurance::emulate(QVector<QString>* hist) {
         }
 
         QVector<InsuranceOffer> _offers = QVector<InsuranceOffer>();
-        for(int j = 0; j < offers.size(); ++j) {
+        for(long long j = 0; j < offers.size(); ++j) {
             if (offers[j].stats().duration_count().empty() && !offers[j].enabled())
                 continue;
 
@@ -359,10 +364,10 @@ inline void Insurance::emulate(QVector<QString>* hist) {
             }
 
             auto prev_stats = offers[j].stats();
-            QMap<int, int> nextDuration;
+            QMap<long long, long long> nextDuration;
             auto prevDuration = prev_stats.duration_count();
             for(auto& k : prevDuration.keys()) {
-                int count = prevDuration.value(k);
+                long long count = prevDuration.value(k);
                 if (k == 1) {
                     changed_stats[j].first -= count;
                     hist->push_back("Конец контракта по " + offers[j].insurance_company_name() + " - " + QString::number(count));

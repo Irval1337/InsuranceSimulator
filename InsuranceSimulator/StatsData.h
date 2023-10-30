@@ -11,13 +11,13 @@ public:
         month_revenue_ = 0;
         total_payment_amount_ = 0;
         month_payment_amount_ = 0;
-        duration_count_ = QMap<int, int>();
+        duration_count_ = QMap<long long, long long>();
     }
 
-    int total_customers_count() const;
-    void setTotal_customers_count(int newTotal_customers_count);
-    int month_customers_count() const;
-    void setMonth_customers_count(int newMonth_customers_count);
+    long long total_customers_count() const;
+    void setTotal_customers_count(long long newTotal_customers_count);
+    long long month_customers_count() const;
+    void setMonth_customers_count(long long newMonth_customers_count);
     double total_revenue() const;
     void setTotal_revenue(double newTotal_revenue);
     double month_revenue() const;
@@ -26,8 +26,8 @@ public:
     void setTotal_payment_amount(double newTotal_payment_amount);
     double month_payment_amount() const;
     void setMonth_payment_amount(double newMonth_payment_amount);
-    QMap<int, int> duration_count() const;
-    void setDuration_count(const QMap<int, int>& newDuration_count);
+    QMap<long long, long long> duration_count() const;
+    void setDuration_count(const QMap<long long, long long>& newDuration_count);
 
     bool operator==(const StatsData& other) const {
         return total_customers_count_ == other.total_customers_count_ &&
@@ -43,34 +43,34 @@ public:
     }
 
 private:
-    int total_customers_count_; // количество покупателей
-    int month_customers_count_; // количество новых покупателей за месяц
+    long long total_customers_count_; // количество покупателей
+    long long month_customers_count_; // количество новых покупателей за месяц
     double total_revenue_; // общая выручка
     double month_revenue_; // выручка за прошлый месяц
     double total_payment_amount_; // общая сумма выплат за все время
     double month_payment_amount_; // сумма выплат за последний месяц
 
-    QMap<int, int> duration_count_; // сроки страховки текущих пользователей
+    QMap<long long, long long> duration_count_; // сроки страховки текущих пользователей
 };
 
-inline int StatsData::total_customers_count() const
+inline long long StatsData::total_customers_count() const
 {
     return total_customers_count_;
 }
 
-inline void StatsData::setTotal_customers_count(int newTotal_customers_count)
+inline void StatsData::setTotal_customers_count(long long newTotal_customers_count)
 {
     if (total_customers_count_ == newTotal_customers_count)
         return;
     total_customers_count_ = newTotal_customers_count;
 }
 
-inline int StatsData::month_customers_count() const
+inline long long StatsData::month_customers_count() const
 {
     return month_customers_count_;
 }
 
-inline void StatsData::setMonth_customers_count(int newMonth_customers_count)
+inline void StatsData::setMonth_customers_count(long long newMonth_customers_count)
 {
     if (month_customers_count_ == newMonth_customers_count)
         return;
@@ -128,12 +128,12 @@ inline void StatsData::setMonth_payment_amount(double newMonth_payment_amount)
     month_payment_amount_ = newMonth_payment_amount;
 }
 
-inline QMap<int, int> StatsData::duration_count() const
+inline QMap<long long, long long> StatsData::duration_count() const
 {
     return duration_count_;
 }
 
-inline void StatsData::setDuration_count(const QMap<int, int> &newDuration_count)
+inline void StatsData::setDuration_count(const QMap<long long, long long> &newDuration_count)
 {
     if (duration_count_ == newDuration_count)
         return;
@@ -143,8 +143,8 @@ inline void StatsData::setDuration_count(const QMap<int, int> &newDuration_count
 template<class T>
 bool operator==(const QVector<T>& vec, const QVector<T>& vec2) {
     if (vec.size() != vec2.size()) return false;
-    int sz = vec.size();
-    for(int i = 0; i < sz; ++i) {
+    long long sz = vec.size();
+    for(long long i = 0; i < sz; ++i) {
         if (vec[i] != vec2[i]) return false;
     }
     return true;

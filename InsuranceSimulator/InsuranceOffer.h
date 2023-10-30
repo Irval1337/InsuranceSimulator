@@ -7,10 +7,10 @@ class InsuranceOffer {
 public:
     double contribution_amount() const;
     void setContribution_amount(double newContribution_amount);
-    int contribution_period() const;
-    void setContribution_period(int newContribution_period);
-    int duration() const;
-    void setDuration(int newDuration);
+    long long contribution_period() const;
+    void setContribution_period(long long newContribution_period);
+    long long duration() const;
+    void setDuration(long long newDuration);
     double max_reimbursement_amount() const;
     void setMax_reimbursement_amount(double newMax_reimbursement_amount);
     double franchise() const;
@@ -19,8 +19,8 @@ public:
     void setInsurance_company_name(const QString &newInsurance_company_name);
     QString insurance_type() const;
     void setInsurance_type(const QString &newInsurance_type);
-    int relevance_period() const;
-    void setRelevance_period(int newRelevance_period);
+    long long relevance_period() const;
+    void setRelevance_period(long long newRelevance_period);
     StatsData stats() const;
     void setStats(const StatsData &newStats);
     bool enabled() const;
@@ -40,13 +40,13 @@ public:
 private:
     bool enabled_; // предоставляется ли эта услуга
     double contribution_amount_; // взнос
-    int contribution_period_; // периодичность взноса
-    int duration_; // срок действия договора
+    long long contribution_period_; // периодичность взноса
+    long long duration_; // срок действия договора
     double max_reimbursement_amount_; // максимальныя сумма возмещения
     double franchise_; // минимальная сумма возмещения (франшиза)
     QString insurance_company_name_; // название компании, которая предлагает страховку (ОСАГО/КАСКО)
     QString insurance_type_; // общий тип, к которому относится это предложение (авто/здоровье/жилье)
-    int relevance_period_; // сколько еще месяцев предложение актуально
+    long long relevance_period_; // сколько еще месяцев предложение актуально
     StatsData stats_; // общая информация о клиентах
 };
 
@@ -62,24 +62,24 @@ inline void InsuranceOffer::setContribution_amount(double newContribution_amount
     contribution_amount_ = newContribution_amount;
 }
 
-inline int InsuranceOffer::contribution_period() const
+inline long long InsuranceOffer::contribution_period() const
 {
     return contribution_period_;
 }
 
-inline void InsuranceOffer::setContribution_period(int newContribution_period)
+inline void InsuranceOffer::setContribution_period(long long newContribution_period)
 {
     if (contribution_period_ == newContribution_period)
         return;
     contribution_period_ = newContribution_period;
 }
 
-inline int InsuranceOffer::duration() const
+inline long long InsuranceOffer::duration() const
 {
     return duration_;
 }
 
-inline void InsuranceOffer::setDuration(int newDuration)
+inline void InsuranceOffer::setDuration(long long newDuration)
 {
     if (duration_ == newDuration)
         return;
@@ -134,12 +134,12 @@ inline void InsuranceOffer::setInsurance_type(const QString &newInsurance_type)
     insurance_type_ = newInsurance_type;
 }
 
-inline int InsuranceOffer::relevance_period() const
+inline long long InsuranceOffer::relevance_period() const
 {
     return relevance_period_;
 }
 
-inline void InsuranceOffer::setRelevance_period(int newRelevance_period)
+inline void InsuranceOffer::setRelevance_period(long long newRelevance_period)
 {
     if (relevance_period_ == newRelevance_period)
         return;

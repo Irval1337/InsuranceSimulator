@@ -67,16 +67,9 @@ QString MainWindow::int_to_months(int count) {
     return QString::number(count) + " месяцев";
 }
 
-void MainWindow::on_horizontalSlider_valueChanged(int value)
-{
-    ui->periodLabel->setAlignment(Qt::AlignCenter);
-    ui->periodLabel->setText(int_to_months(value));
-    ui->nextNmonths->setText("Вперед на " + int_to_months(value - curr_month_ + 1));
-}
-
 void MainWindow::on_pushButton_clicked() // Вперед
 {
-    if (curr_month_ == ui->horizontalSlider->maximum() || insurance->banned()) return;
+    if (insurance->banned()) return;
 
     insurance->emulate(&hist_);
 
@@ -88,13 +81,11 @@ void MainWindow::on_pushButton_clicked() // Вперед
     if (insurance->banned())
         QMessageBox::critical(this, "Внимание", "Ваша компания обонкротилась из-за невозможности выплаты по страховым случаям. Эмуляция завершена.");
 
-    ui->horizontalSlider->setMinimum(curr_month_);
-    ui->nextNmonths->setText("Вперед на " + int_to_months(ui->horizontalSlider->value() - curr_month_ + 1));
 }
 
 void MainWindow::on_nextNmonths_clicked() // Вперед N раз
 {
-    int cnt = ui->horizontalSlider->value() - curr_month_ + 1;
+    int cnt = ui->lineEdit_3->text().toInt();
     for(int i = 0; i < cnt; ++i) {
         on_pushButton_clicked();
     }
@@ -104,8 +95,6 @@ void MainWindow::on_pushButton_5_clicked() // Вернуться
 {
     if (curr_month_ == 1) return;
     curr_month_--;
-    ui->horizontalSlider->setMinimum(curr_month_);
-    ui->nextNmonths->setText("Вперед на " + int_to_months(ui->horizontalSlider->value() - curr_month_ + 1));
 }
 
 void MainWindow::render()

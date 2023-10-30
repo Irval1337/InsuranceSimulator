@@ -9,8 +9,8 @@ public:
     void setOffers(const QVector<InsuranceOffer> &newOffers);
     bool enabled() const;
     void setEnabled(bool newEnabled);
-    int potential_customers_count() const;
-    void setPotential_customers_count(int newPotential_customers_count);
+    long long potential_customers_count() const;
+    void setPotential_customers_count(long long newPotential_customers_count);
     QPair<double, double> insured_events_range() const;
     void setInsured_events_range(const QPair<double, double> &newInsured_events_range);
     StatsData stats() const;
@@ -29,7 +29,7 @@ public:
 private:
     QVector<InsuranceOffer> offers_; // все предложения, которые доступны для этого типа
     bool enabled_; // предоставляем ли мы сейчас эти услуги
-    int potential_customers_count_; // количество потенциальных покупателей
+    long long potential_customers_count_; // количество потенциальных покупателей
     QPair<double, double> insured_events_range_; // диапазон изменения количества страховых случаев каждый месяц
     StatsData stats_; // общая информация о клиентах
     QString insurance_type_; // тип страховки
@@ -58,17 +58,17 @@ inline void InsuranceType::setOffers(const QVector<InsuranceOffer> &newOffers)
     offers_ = newOffers;
 
     StatsData stats = stats_;
-    int customers = 0, payment = 0, revenue = 0;
+    long long customers = 0, payment = 0, revenue = 0;
 
-    QMap<int, int> duration;
-    for(int i = 0; i < offers_.size(); ++i) {
+    QMap<long long, long long> duration;
+    for(long long i = 0; i < offers_.size(); ++i) {
         customers += offers_[i].stats().month_customers_count();
         payment += offers_[i].stats().month_payment_amount();
         revenue += offers_[i].stats().month_revenue();
 
         auto durations = offers_[i].stats().duration_count();
         for(auto& k : durations.keys()) {
-            int count = durations.value(k);
+            long long count = durations.value(k);
             duration[k] += count;
         }
     }
@@ -91,12 +91,12 @@ inline void InsuranceType::setEnabled(bool newEnabled)
     enabled_ = newEnabled;
 }
 
-inline int InsuranceType::potential_customers_count() const
+inline long long InsuranceType::potential_customers_count() const
 {
     return potential_customers_count_;
 }
 
-inline void InsuranceType::setPotential_customers_count(int newPotential_customers_count)
+inline void InsuranceType::setPotential_customers_count(long long newPotential_customers_count)
 {
     if (potential_customers_count_ == newPotential_customers_count)
         return;

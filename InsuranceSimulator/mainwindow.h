@@ -19,8 +19,6 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_horizontalSlider_valueChanged(int value);
-
     void on_pushButton_clicked();
 
     void on_nextNmonths_clicked();
@@ -48,9 +46,9 @@ private slots:
 private:
     Ui::MainWindow *ui;
     Insurance* insurance;
-    int curr_month_ = 1;
+    long long curr_month_ = 1;
     QString company_name_ = "???";
-    int list_level_ = 0;
+    long long list_level_ = 0;
     void* listp = nullptr;
     QVector<QString> hist_ = QVector<QString>();
     QVector<double> capitals_ = { 0 };
@@ -58,7 +56,7 @@ private:
     QValueAxis* gay = nullptr;
     double mx = 0;
 
-    QString int_to_months(int n);
+    QString long long_to_months(long long n);
     void render();
     void render_list();
 };
