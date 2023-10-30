@@ -3,6 +3,10 @@
 #include "InsuranceType.h"
 #include "Random.h"
 #include "cmath"
+#include <QFile>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 class Insurance {
 public:
@@ -25,6 +29,8 @@ public:
     void setBanned(bool newBanned);
 
     void emulate(QVector<QString>* hist); // Функция для эмуляции работы компании в течение месяца
+    bool save(QString path) const;
+    bool open(QString path);
 
 private:
     QVector<InsuranceType> insurances_; // все страховки, которые предоставляются компанией
@@ -44,6 +50,108 @@ private:
         }
     };
 };
+
+void Insurance::open(QString& path) {
+    Insurance prev;
+
+    try {
+        QFile file(path);
+        if (!file.exists() || !file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            return false;
+        }
+        QString data = file.readAll();
+        file.close();
+        QJsonDocument doc = QJsonDocument::fromJson(data.toUtf8());
+        QJsonObject json = doc.object();
+
+        prev.setBanned(false);
+        prev.setCapital(json["capital"].toDouble());
+        prev.setTax_percentage(json["tax_percentage"].toDouble());
+        QVector<InsuranceType> ins;
+        QJsonArray ins_arr = json["insurances"].toArray();
+        for(QJsonValue& val : ins_arr) {
+            QJsonObject obj = val.toObject();
+            InsuranceType type;
+            type.setEnabled(true);
+            type.setInsurance_type(obj["insurance_type"].toString());
+            type.setInsured_events_range({obj["insured_events_min"].toDouble(), obj["insured_events_max"].toDouble()});
+            type.setPotential_customers_count(obj["potential_customers_count"].toInt());
+
+            QJsonArray offers_arr = obj["offers"].toArray();
+            QVector<InsuranceOffer> offers;
+            for(QJsonValue& v : offers_arr) {
+                QJsonObject ob = v.toObject();
+                InsuranceOffer offer;
+                offer.setEnabled(true);
+                offer.setContribution_amount(ob["contribution_amount"].toDouble());
+                offer.setContribution_period(ob["contribution_period"].toInt());
+                offer.setDuration(ob["duration"].toInt());
+                offer.setMax_reimbursement_amount(ob["max_reimbursement_amount"].toDouble());
+                offer.setFranchise(ob["franchise"].toDouble());
+                offer.setInsurance_company_name(ob["insurance_company_name"].toString());
+                offer.setInsurance_type(type.insurance_type());
+                offer.setRelevance_period(ob["relevance_period"].toInt());
+                offers.push_back(offer);
+            }
+            type.setOffers(offers);
+            ins.push_back(type);
+        }
+        prev.setInsurances(ins);
+
+        *this = prev;
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
+
+bool Insurance::save(QString path) const {
+    if (path == QString()) {
+        return false;
+    }
+
+    try {
+        QFile file(path);
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
+            return false;
+        }
+        QJsonObject json;
+        json["capital"] = this->capital();
+        json["tax_percentage"] = this->tax_percentage();
+        QJsonArray ins;
+        for(auto& in : insurances_) {
+            QJsonObject in_json;
+            in_json["insurance_type"] = in.insurance_type();
+            in_json["insured_events_min"] = in.insured_events_range().first;
+            in_json["insured_events_max"] = in.insured_events_range().second;
+            in_json["potential_customers_count"] = in.potential_customers_count();
+            QJsonArray offers;
+            for(auto& of : in.offers()) {
+                QJsonObject offer;
+                offer["contribution_amount"] = of.contribution_amount();
+                offer["contribution_period"] = of.contribution_period();
+                offer["duration"] = of.duration();
+                offer["max_reimbursement_amount"] = of.max_reimbursement_amount();
+                offer["franchise"] = of.franchise();
+                offer["insurance_company_name"] = of.insurance_company_name();
+                offer["relevance_period"] = of.relevance_period();
+                offers.push_back(offer);
+            }
+            in_json["offers"] = offers;
+            ins.push_back(in_json);
+        }
+        json["insurances"] = ins;
+
+        QTextStream stream(&file);
+        stream << QJsonDocument(json).toJson();
+        file.flush();
+        file.close();
+
+        return true;
+    } catch (...) {
+        return false;
+    }
+}
 
 inline QVector<InsuranceType> Insurance::insurances() const
 {

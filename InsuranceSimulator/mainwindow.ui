@@ -129,7 +129,7 @@
       <number>1</number>
      </property>
      <property name="maximum">
-      <number>31</number>
+      <number>1000</number>
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -276,6 +276,12 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+   </widget>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action">
