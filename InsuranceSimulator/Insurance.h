@@ -193,9 +193,11 @@ inline void Insurance::emulate(QVector<QString>* hist) {
 
         for(int j = 0; j < offers.size(); ++j) { // Добавляем новых пользователей
             if (!offers[j].enabled() || insurs[i].potential_customers_count() == 0) continue;
-            int new_customers_count = (int)(((int)sqrt(sqrt(offers[j].stats().total_customers_count())) + 1) * Random::get(0.0, 2.0)
+            int new_customers_count = ((int)sqrt(sqrt(offers[j].stats().total_customers_count())) + 1) * Random::get(0.0, 2.0)
                                             * offers[j].max_reimbursement_amount() / offers[j].duration() / offers[j].contribution_amount() *
-                                            sqr(log2(prev))) % prev; // TODO: добавить разность с рынком
+                                            sqr(log2(prev) + 1) + 1; // TODO: добавить разность с рынком
+            if (new_customers_count > prev && new_customers_count % prev < prev / 2)
+                new_customers_count = prev / 2 + Random::get(0.0, 0.5) * prev;
             insurs[i].setPotential_customers_count(insurs[i].potential_customers_count() - new_customers_count);
             prev -= new_customers_count;
             hist->push_back("Новые клиенты по " + offers[j].insurance_company_name() + " - " + QString::number(new_customers_count));
