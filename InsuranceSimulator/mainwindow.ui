@@ -51,12 +51,12 @@
      <rect>
       <x>260</x>
       <y>90</y>
-      <width>111</width>
+      <width>141</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Состояние рынка</string>
+     <string>Изменение капитала</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_4">
@@ -151,9 +151,9 @@
     <widget class="QPushButton" name="pushButton">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>10</x>
        <y>100</y>
-       <width>101</width>
+       <width>211</width>
        <height>24</height>
       </rect>
      </property>
@@ -172,19 +172,6 @@
      </property>
      <property name="text">
       <string>Вперед на 1 месяцев</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_5">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>100</y>
-       <width>101</width>
-       <height>24</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Вернуться</string>
      </property>
     </widget>
    </widget>
@@ -250,16 +237,6 @@
      </rect>
     </property>
    </widget>
-   <widget class="QListWidget" name="listWidget_2">
-    <property name="geometry">
-     <rect>
-      <x>260</x>
-      <y>110</y>
-      <width>231</width>
-      <height>111</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QPushButton" name="pushButton_2">
     <property name="geometry">
      <rect>
@@ -277,6 +254,17 @@
     <property name="text">
      <string>Изменить</string>
     </property>
+   </widget>
+   <widget class="QWidget" name="horizontalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>110</y>
+      <width>231</width>
+      <height>121</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout"/>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

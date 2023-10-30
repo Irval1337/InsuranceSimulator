@@ -1,8 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QLogValueAxis>
-#include <QLineSeries>
-#include <QValueAxis>
 #include <QChart>
 #include <QChartView>
 #include "settingswindow.h"
@@ -20,6 +18,34 @@ MainWindow::MainWindow(QWidget *parent)
     insurance = new Insurance();
     listp = nullptr;
     ui->pushButton_2->setVisible(false);
+    series_->append(0, 0);
+
+    auto chart = new QChart();
+    chart->addSeries(series_);
+    chart->createDefaultAxes();
+
+    QValueAxis * axisX = new QValueAxis();
+    axisX->setRange(0, 32);
+    axisX->setTickCount(2);
+    chart->setAxisX(axisX);
+
+    gay = new QValueAxis();
+    gay->setRange(0, 1);
+    gay->setTickCount(2);
+    chart->setAxisY(gay);
+
+    series_->attachAxis(axisX);
+    series_->attachAxis(gay);
+
+    chart->setBackgroundVisible(false);
+    chart->setMargins(QMargins(0,0,0,0));
+    chart->legend()->hide();
+    chart->setPlotAreaBackgroundVisible(true);
+
+    auto chartView = new QChartView(chart);
+
+    ui->horizontalLayout->addWidget(chartView);
+
     render();
 }
 
@@ -52,13 +78,15 @@ void MainWindow::on_pushButton_clicked() // Вперед
     if (curr_month_ == ui->horizontalSlider->maximum() || insurance->banned()) return;
 
     insurance->emulate(&hist_);
+
+    curr_month_++;
+
     render();
     render_list();
 
     if (insurance->banned())
         QMessageBox::critical(this, "Внимание", "Ваша компания обонкротилась из-за невозможности выплаты по страховым случаям. Эмуляция завершена.");
 
-    curr_month_++;
     ui->horizontalSlider->setMinimum(curr_month_);
     ui->nextNmonths->setText("Вперед на " + int_to_months(ui->horizontalSlider->value() - curr_month_ + 1));
 }
@@ -81,6 +109,12 @@ void MainWindow::on_pushButton_5_clicked() // Вернуться
 
 void MainWindow::render()
 {
+    if (!qFuzzyCompare(capitals_.back(), insurance->capital())) {
+        capitals_.push_back(insurance->capital());
+        mx = std::max(mx, capitals_.back());
+        gay->setRange(0, mx);
+        series_->append(curr_month_, capitals_.back());
+    }
     setWindowTitle("Симулятор страховой [" + company_name_ + "]");
     ui->lineEdit->setText(QString::number(insurance->capital()) + "$");
     ui->lineEdit_2->setText(QString::number(insurance->stats().total_customers_count()));

@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include "Insurance.h"
+#include <QLineSeries>
+#include <QValueAxis>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -47,6 +49,10 @@ private:
     int list_level_ = 0;
     void* listp = nullptr;
     QVector<QString> hist_ = QVector<QString>();
+    QVector<double> capitals_ = { 0 };
+    QLineSeries *series_ = new QLineSeries();
+    QValueAxis* gay = nullptr;
+    double mx = 0;
 
     QString int_to_months(int n);
     void render();

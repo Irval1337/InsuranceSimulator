@@ -242,7 +242,10 @@ inline void Insurance::emulate(QVector<QString>* hist) {
                 continue;
 
             offers[j].setRelevance_period(offers[j].relevance_period() - 1);
-            if (offers[j].relevance_period() == 0) offers[j].setEnabled(false);
+            if (offers[j].relevance_period() == 0) {
+                offers[j].setEnabled(false);
+                hist->push_back("Предложение по " + offers[j].insurance_company_name() + " больше не актуально");
+            }
 
             auto prev_stats = offers[j].stats();
             QMap<int, int> nextDuration;
