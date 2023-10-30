@@ -17,10 +17,10 @@ InsuranceOfferDialog::InsuranceOfferDialog(InsuranceOffer* offer_, QString type_
     setWindowTitle("Редактирование предложения");
     ui->lineEdit->setText(offer_->insurance_company_name());
     ui->lineEdit_2->setText(QString::number(offer_->contribution_period()));
-    ui->lineEdit_3->setText(QString::number(offer_->contribution_amount()));
+    ui->lineEdit_3->setText(QString::number(offer_->contribution_amount(), 'g', 10));
     ui->lineEdit_4->setText(QString::number(offer_->duration()));
-    ui->lineEdit_5->setText(QString::number(offer_->max_reimbursement_amount()));
-    ui->lineEdit_6->setText(QString::number(offer_->franchise()));
+    ui->lineEdit_5->setText(QString::number(offer_->max_reimbursement_amount(), 'g', 10));
+    ui->lineEdit_6->setText(QString::number(offer_->franchise(), 'g', 10));
     ui->lineEdit_7->setText(QString::number(offer_->relevance_period()));
     ui->pushButton->setVisible(true);
     ui->pushButton_2->setVisible(true);

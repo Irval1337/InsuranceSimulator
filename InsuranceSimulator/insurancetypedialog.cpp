@@ -18,8 +18,8 @@ InsuranceTypeDialog::InsuranceTypeDialog(InsuranceType* insurance_, QWidget *par
     ui->pushButton->setVisible(true);
     ui->pushButton_2->setVisible(true);
     ui->lineEdit->setText(QString::number(insurance_->potential_customers_count()));
-    ui->lineEdit_2->setText(QString::number(insurance_->insured_events_range().first));
-    ui->lineEdit_3->setText(QString::number(insurance_->insured_events_range().second));
+    ui->lineEdit_2->setText(QString::number(insurance_->insured_events_range().first, 'g', 10));
+    ui->lineEdit_3->setText(QString::number(insurance_->insured_events_range().second, 'g', 10));
     ui->lineEdit_4->setText(insurance->insurance_type());
 }
 
@@ -44,8 +44,8 @@ void InsuranceTypeDialog::on_buttonBox_accepted()
         QMessageBox::warning(this, "Ошибка", "Указанные данные имеют неверные типы");
     } else if (customers < 0) {
         QMessageBox::warning(this, "Ошибка", "Потенциальное количество клиентов должено быть положительным числом");
-    } else if (min < 0 || max < 0) {
-        QMessageBox::warning(this, "Ошибка", "Количество страховых случаев должено быть положительным числом");
+    } else if (min < 0 || max < 0 || max > 1000) {
+        QMessageBox::warning(this, "Ошибка", "Количество страховых случаев должено быть положительным числом, не превыщающем 1000");
     } else if (min > max) {
         QMessageBox::warning(this, "Ошибка", "Минимум не может быть больше максимума");
     } else if (type.size() == 0) {

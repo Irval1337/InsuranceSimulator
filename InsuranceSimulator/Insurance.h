@@ -51,7 +51,7 @@ private:
     };
 };
 
-void Insurance::open(QString& path) {
+inline bool Insurance::open(QString path) {
     Insurance prev;
 
     try {
@@ -69,7 +69,7 @@ void Insurance::open(QString& path) {
         prev.setTax_percentage(json["tax_percentage"].toDouble());
         QVector<InsuranceType> ins;
         QJsonArray ins_arr = json["insurances"].toArray();
-        for(QJsonValue& val : ins_arr) {
+        for(QJsonValue val : ins_arr) {
             QJsonObject obj = val.toObject();
             InsuranceType type;
             type.setEnabled(true);
@@ -79,7 +79,7 @@ void Insurance::open(QString& path) {
 
             QJsonArray offers_arr = obj["offers"].toArray();
             QVector<InsuranceOffer> offers;
-            for(QJsonValue& v : offers_arr) {
+            for(QJsonValue v : offers_arr) {
                 QJsonObject ob = v.toObject();
                 InsuranceOffer offer;
                 offer.setEnabled(true);
@@ -105,7 +105,7 @@ void Insurance::open(QString& path) {
     }
 }
 
-bool Insurance::save(QString path) const {
+inline bool Insurance::save(QString path) const {
     if (path == QString()) {
         return false;
     }
@@ -119,14 +119,14 @@ bool Insurance::save(QString path) const {
         json["capital"] = this->capital();
         json["tax_percentage"] = this->tax_percentage();
         QJsonArray ins;
-        for(auto& in : insurances_) {
+        for(auto in : insurances_) {
             QJsonObject in_json;
             in_json["insurance_type"] = in.insurance_type();
             in_json["insured_events_min"] = in.insured_events_range().first;
             in_json["insured_events_max"] = in.insured_events_range().second;
             in_json["potential_customers_count"] = in.potential_customers_count();
             QJsonArray offers;
-            for(auto& of : in.offers()) {
+            for(auto of : in.offers()) {
                 QJsonObject offer;
                 offer["contribution_amount"] = of.contribution_amount();
                 offer["contribution_period"] = of.contribution_period();
@@ -283,7 +283,7 @@ inline void Insurance::emulate(QVector<QString>* hist) {
                 double amount = offers[ind].max_reimbursement_amount() * coeff; // сумма для возмещения
                 if (amount < offers[ind].franchise()) continue; // если франшиза больше, то не добавляем событие
                 events.push_back(event(1, amount, ind)); // Тип 1 - страховое возмещение
-                hist->push_back("Возмещение по " + offers[ind].insurance_company_name() + " - " + QString::number(amount));
+                hist->push_back("Возмещение по " + offers[ind].insurance_company_name() + " - " + QString::number(amount, 'g', 10));
             }
         }
 
@@ -295,7 +295,8 @@ inline void Insurance::emulate(QVector<QString>* hist) {
                         events.push_back(event(3, offers[j].contribution_amount(), j)); // Тип 3 - выплата
                     }
                 }
-                hist->push_back("Выплаты по " + offers[j].insurance_company_name() + " - " + QString::number(count) + "x" + QString::number(offers[j].contribution_amount()) + "$");
+                hist->push_back("Выплаты по " + offers[j].insurance_company_name() + " - " +
+                                QString::number(count) + "x" + QString::number(offers[j].contribution_amount(), 'g', 10) + "$");
             }
         }
 

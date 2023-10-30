@@ -9,6 +9,7 @@
 #include <QMessageBox>
 #include "statsdialog.h"
 #include "historydialog.h"
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -116,7 +117,7 @@ void MainWindow::render()
         series_->append(curr_month_, capitals_.back());
     }
     setWindowTitle("Симулятор страховой [" + company_name_ + "]");
-    ui->lineEdit->setText(QString::number(insurance->capital()) + "$");
+    ui->lineEdit->setText(QString::number(insurance->capital(), 'g', 10) + "$");
     ui->lineEdit_2->setText(QString::number(insurance->stats().total_customers_count()));
 }
 
@@ -256,5 +257,27 @@ void MainWindow::on_pushButton_6_clicked() // Статистика
 void MainWindow::on_pushButton_7_clicked() // История
 {
     (new HistoryDialog(&hist_))->exec();
+}
+
+
+void MainWindow::on_action_4_triggered() // Файл -> Открыть
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Открытие"), "", tr("Insurance settings (*.ins)"));
+    if (!insurance->open(fileName)) {
+        QMessageBox::warning(this, "InsuranceEmulator", "В процессе открытия произошла ошибка. Возможно, файл поврежден.");
+    } else {
+        auto ind = fileName.lastIndexOf('/') + 1;
+        company_name_ = fileName.right(fileName.size() - ind);
+        list_level_ = 0;
+        render();
+        render_list();
+    }
+}
+
+
+void MainWindow::on_action_9_triggered() // Файл -> Сохранить как...
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Сохранение"), "", tr("Insurance settings (*.ins)"));
+    insurance->save(fileName);
 }
 

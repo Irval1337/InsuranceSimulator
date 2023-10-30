@@ -41,6 +41,10 @@ private slots:
 
     void on_pushButton_7_clicked();
 
+    void on_action_4_triggered();
+
+    void on_action_9_triggered();
+
 private:
     Ui::MainWindow *ui;
     Insurance* insurance;

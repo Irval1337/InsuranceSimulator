@@ -10,8 +10,8 @@ SettingsWindow::SettingsWindow(Insurance* insurance_, QString* company_name_, QW
     setWindowTitle("Настройки");
     ui->buttonBox->buttons()[1]->setText("Отмена");
 
-    ui->lineEdit->setText(QString::number(insurance->tax_percentage() * 100));
-    ui->lineEdit_2->setText(QString::number(insurance->capital()));
+    ui->lineEdit->setText(QString::number(insurance->tax_percentage() * 100, 'g', 10));
+    ui->lineEdit_2->setText(QString::number(insurance->capital(), 'g', 10));
     ui->lineEdit_3->setText(*company_name);
 }
 

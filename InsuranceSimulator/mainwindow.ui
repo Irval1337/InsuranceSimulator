@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>501</width>
-    <height>432</height>
+    <height>450</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -280,6 +280,8 @@
     <property name="title">
      <string>Файл</string>
     </property>
+    <addaction name="action_4"/>
+    <addaction name="action_9"/>
    </widget>
    <addaction name="menu"/>
   </widget>
@@ -317,6 +319,16 @@
   <action name="action_8">
    <property name="text">
     <string>Новый</string>
+   </property>
+  </action>
+  <action name="action_4">
+   <property name="text">
+    <string>Открыть...</string>
+   </property>
+  </action>
+  <action name="action_9">
+   <property name="text">
+    <string>Сохранить как...</string>
    </property>
   </action>
  </widget>
