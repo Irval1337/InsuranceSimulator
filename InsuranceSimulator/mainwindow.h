@@ -56,7 +56,7 @@ private:
     QValueAxis* gay = nullptr;
     double mx = 0;
 
-    QString long long_to_months(long long n);
+    QString int_to_months(long long n);
     void render();
     void render_list();
 };

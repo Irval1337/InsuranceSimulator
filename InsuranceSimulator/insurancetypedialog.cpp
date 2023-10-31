@@ -32,7 +32,7 @@ void InsuranceTypeDialog::on_buttonBox_accepted()
 {
     bool ok = true;
     bool check = true;
-    int customers = ui->lineEdit->text().toInt(&ok);
+    long long customers = ui->lineEdit->text().toLongLong(&ok);
     check &= ok;
     double min = ui->lineEdit_2->text().toDouble(&ok);
     check &= ok;

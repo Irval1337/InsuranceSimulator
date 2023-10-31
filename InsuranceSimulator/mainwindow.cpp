@@ -55,7 +55,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-QString MainWindow::int_to_months(int count) {
+QString MainWindow::int_to_months(long long count) {
     if (count % 100 >= 11 && count % 100 <= 20)
         return QString::number(count) + " месяцев";
     else if (count % 10 == 1)
@@ -85,8 +85,8 @@ void MainWindow::on_pushButton_clicked() // Вперед
 
 void MainWindow::on_nextNmonths_clicked() // Вперед N раз
 {
-    int cnt = ui->lineEdit_3->text().toInt();
-    for(int i = 0; i < cnt; ++i) {
+    long long cnt = ui->lineEdit_3->text().toLongLong();
+    for(long long i = 0; i < cnt; ++i) {
         on_pushButton_clicked();
     }
 }
@@ -119,7 +119,7 @@ void MainWindow::render_list()
             ui->listWidget->addItem(u.insurance_type());
         }
     } else if (list_level_ == 1) {
-        int ind = *(int*)listp;
+        long long ind = *(long long*)listp;
         for(auto& u : insurance->insurances()[ind].offers()) {
             if (!u.enabled()) continue;
             ui->listWidget->addItem(u.insurance_company_name());
@@ -154,7 +154,7 @@ void MainWindow::on_pushButton_4_clicked() // Добавить
         ui->listWidget->addItem(ptr->insurance_type());
         delete ptr;
     } else if (list_level_ == 1) {
-        int ind = *(int*)listp;
+        long long ind = *(long long*)listp;
         InsuranceOffer* ptr = new InsuranceOffer();
         (new InsuranceOfferDialog(ptr, insurance->insurances()[ind].insurance_type()))->exec();
         if (*ptr == InsuranceOffer()) return;
@@ -182,15 +182,15 @@ void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
     if (ui->listWidget->selectedItems().empty()) return;
 
     if (list_level_ == 0) {
-        int index = ui->listWidget->row(ui->listWidget->selectedItems()[0]);
-        listp = new int(index);
+        long long index = ui->listWidget->row(ui->listWidget->selectedItems()[0]);
+        listp = new long long(index);
         list_level_++;
         ui->infoLabel->setText("Актуальные предложения по " + insurance->insurances()[index].insurance_type());
         ui->pushButton_2->setVisible(true);
         render_list();
     } else {
-        int index = ui->listWidget->row(ui->listWidget->selectedItems()[0]);
-        int sec_index = *(int*)listp;
+        long long index = ui->listWidget->row(ui->listWidget->selectedItems()[0]);
+        long long sec_index = *(long long*)listp;
         InsuranceOffer* ptr = new InsuranceOffer(insurance->insurances()[sec_index].offers()[index]);
         (new InsuranceOfferDialog(ptr, insurance->insurances()[sec_index].insurance_type()))->exec();
 
@@ -222,7 +222,7 @@ void MainWindow::on_pushButton_3_clicked() // Назад
 
 void MainWindow::on_pushButton_2_clicked() // Ред.
 {
-    int index = *(int*)listp;
+    long long index = *(long long*)listp;
     InsuranceType* ptr = new InsuranceType(insurance->insurances()[index]);
     (new InsuranceTypeDialog(ptr))->exec();
 

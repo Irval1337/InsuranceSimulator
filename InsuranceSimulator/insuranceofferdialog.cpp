@@ -36,17 +36,17 @@ void InsuranceOfferDialog::on_buttonBox_accepted()
     bool ok = true;
     bool check = true;
     QString name = ui->lineEdit->text();
-    int period_cont = ui->lineEdit_2->text().toInt(&ok);
+    long long period_cont = ui->lineEdit_2->text().toLongLong(&ok);
     check &= ok;
     double sum = ui->lineEdit_3->text().toDouble(&ok);
     check &= ok;
-    int duration = ui->lineEdit_4->text().toInt(&ok);
+    long long duration = ui->lineEdit_4->text().toLongLong(&ok);
     check &= ok;
     double max_sum = ui->lineEdit_5->text().toDouble(&ok);
     check &= ok;
     double min_sum = ui->lineEdit_6->text().toDouble(&ok);
     check &= ok;
-    int meme_duration = ui->lineEdit_7->text().toInt(&ok);
+    long long meme_duration = ui->lineEdit_7->text().toLongLong(&ok);
     check &= ok;
 
     if (!check) {

@@ -75,7 +75,7 @@ inline bool Insurance::open(QString path) {
             type.setEnabled(true);
             type.setInsurance_type(obj["insurance_type"].toString());
             type.setInsured_events_range({obj["insured_events_min"].toDouble(), obj["insured_events_max"].toDouble()});
-            type.setPotential_customers_count(obj["potential_customers_count"].tolong long());
+            type.setPotential_customers_count(obj["potential_customers_count"].toInteger());
 
             QJsonArray offers_arr = obj["offers"].toArray();
             QVector<InsuranceOffer> offers;
@@ -84,13 +84,13 @@ inline bool Insurance::open(QString path) {
                 InsuranceOffer offer;
                 offer.setEnabled(true);
                 offer.setContribution_amount(ob["contribution_amount"].toDouble());
-                offer.setContribution_period(ob["contribution_period"].tolong long());
-                offer.setDuration(ob["duration"].tolong long());
+                offer.setContribution_period(ob["contribution_period"].toInteger());
+                offer.setDuration(ob["duration"].toInteger());
                 offer.setMax_reimbursement_amount(ob["max_reimbursement_amount"].toDouble());
                 offer.setFranchise(ob["franchise"].toDouble());
                 offer.setInsurance_company_name(ob["insurance_company_name"].toString());
                 offer.setInsurance_type(type.insurance_type());
-                offer.setRelevance_period(ob["relevance_period"].tolong long());
+                offer.setRelevance_period(ob["relevance_period"].toInteger());
                 offers.push_back(offer);
             }
             type.setOffers(offers);
@@ -274,7 +274,7 @@ inline void Insurance::emulate(QVector<QString>* hist) {
             }
 
             for(long long j = 0; j < insurance_events; ++j) {
-                long long _rnd = Random::get(0, pref_sums[pref_sums.size() - 1]); // рандомный номер клиента
+                long long _rnd = Random::get(0LL, pref_sums[pref_sums.size() - 1]); // рандомный номер клиента
 
                 long long L = -1, R = pref_sums.size(), M; // ищем предложение
                 while (L < R - 1) {
