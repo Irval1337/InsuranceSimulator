@@ -7,6 +7,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
+#include <iostream>
 
 class Insurance {
 public:
@@ -249,9 +250,8 @@ inline void Insurance::emulate(QVector<QString>* hist) {
         insurs[i].setPotential_customers_count(ceil(insurs[i].potential_customers_count() + (-1 + 2 * (Random::get(1, 100) % 2)) *
                                                (sqrt(insurs[i].potential_customers_count()) + 1) * Random::get(1.0, log(insurs[i].potential_customers_count()))));
 
-        if (insurs[i].potential_customers_count() <= 0) {
-            insurs[i].setPotential_customers_count(prev * Random::get(1.0, 2.0));
-        }
+        if (insurs[i].potential_customers_count() < 0 || insurs[i].potential_customers_count() > 1e9)
+            insurs[i].setPotential_customers_count(100 * Random::get(0.5, 2.0));
 
         if (offers.empty()) {
             if (insurs[i].stats().total_customers_count() == 0 && !insurs[i].enabled())
@@ -312,6 +312,8 @@ inline void Insurance::emulate(QVector<QString>* hist) {
                                             sqr(log2(prev) + 1) + 1; // TODO: добавить разность с рынком
             if (new_customers_count > prev && new_customers_count % prev < prev / 2)
                 new_customers_count = prev / 2 + Random::get(0.0, 0.5) * prev;
+            if (new_customers_count < 0 || new_customers_count > 1e9)
+                new_customers_count = 100 * Random::get(1.0, 1.5);
             insurs[i].setPotential_customers_count(insurs[i].potential_customers_count() - new_customers_count);
             prev -= new_customers_count;
             hist->push_back("Новые клиенты по " + offers[j].insurance_company_name() + " - " + QString::number(new_customers_count));
@@ -383,7 +385,7 @@ inline void Insurance::emulate(QVector<QString>* hist) {
         }
 
         if (insurs[i].potential_customers_count() <= 0) {
-            insurs[i].setPotential_customers_count(prev * Random::get(1.0, 2.0));
+            insurs[i].setPotential_customers_count(100 * Random::get(1.0, 2.0));
         }
 
         insurs[i].setOffers(_offers);

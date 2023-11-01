@@ -12,6 +12,7 @@ InsuranceTypeDialog::InsuranceTypeDialog(InsuranceType* insurance_, QWidget *par
     ui->buttonBox->buttons()[1]->setText("Отмена");
     ui->pushButton->setVisible(false);
     ui->pushButton_2->setVisible(false);
+    insurance = insurance_;
 
     if (*insurance_ == InsuranceType()) return;
     setWindowTitle("Редактирование типа");
@@ -52,6 +53,9 @@ void InsuranceTypeDialog::on_buttonBox_accepted()
         QMessageBox::warning(this, "Ошибка", "Тип страховки не может быть пустой строкой");
     } else {
         QVector<InsuranceOffer> tmp;
+        if (*insurance != InsuranceType()) {
+            tmp = insurance->offers();
+        }
         insurance->setOffers(tmp);
         insurance->setEnabled(true);
         insurance->setPotential_customers_count(customers);
