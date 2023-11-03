@@ -240,7 +240,7 @@ inline double sqr(double x) {
 }
 
 inline void Insurance::emulate(QVector<QString>* hist) {
-    hist->push_back("Налог гос-ву - " + QString::number(capital() * tax_percentage(), 'g', 10));
+    hist->push_back("Налог гос-ву - " + QString::number(capital() * tax_percentage(), 'g', 10) + "$");
     setCapital(capital() - capital() * tax_percentage());
     auto insurs = insurances();
     QVector<InsuranceType> _ins = QVector<InsuranceType>();

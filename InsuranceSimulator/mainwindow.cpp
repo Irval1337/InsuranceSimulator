@@ -25,18 +25,18 @@ MainWindow::MainWindow(QWidget *parent)
     chart->addSeries(series_);
     chart->createDefaultAxes();
 
-    QValueAxis * axisX = new QValueAxis();
-    axisX->setRange(0, 32);
+    axisX = new QValueAxis();
+    axisX->setRange(0, 1);
     axisX->setTickCount(2);
     chart->setAxisX(axisX);
 
-    gay = new QValueAxis();
-    gay->setRange(0, 1);
-    gay->setTickCount(2);
-    chart->setAxisY(gay);
+    axisY = new QValueAxis();
+    axisY->setRange(0, 1);
+    axisY->setTickCount(2);
+    chart->setAxisY(axisY);
 
     series_->attachAxis(axisX);
-    series_->attachAxis(gay);
+    series_->attachAxis(axisY);
 
     chart->setBackgroundVisible(false);
     chart->setMargins(QMargins(0,0,0,0));
@@ -70,10 +70,10 @@ QString MainWindow::int_to_months(long long count) {
 void MainWindow::on_pushButton_clicked() // Вперед
 {
     if (insurance->banned()) return;
-
     insurance->emulate(&hist_);
 
     curr_month_++;
+    axisX->setRange(0, curr_month_);
 
     render();
     render_list();
@@ -102,7 +102,7 @@ void MainWindow::render()
     if (!qFuzzyCompare(capitals_.back(), insurance->capital())) {
         capitals_.push_back(insurance->capital());
         mx = std::max(mx, capitals_.back());
-        gay->setRange(0, mx);
+        axisY->setRange(0, mx);
         series_->append(curr_month_, capitals_.back());
     }
     setWindowTitle("Симулятор страховой [" + company_name_ + "]");
@@ -198,6 +198,7 @@ void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
         auto ins = insurance->insurances();
         if (*ptr == InsuranceOffer()) {
             offers[index].setEnabled(false);
+            delete ui->listWidget->takeItem(index);
         } else {
             offers[index] = *ptr;
         }
@@ -229,11 +230,16 @@ void MainWindow::on_pushButton_2_clicked() // Ред.
     auto ins = insurance->insurances();
     if (*ptr == InsuranceType()) {
         ins[index].setEnabled(false);
+        list_level_ = 0;
+        insurance->setInsurances(ins);
+        render_list();
     } else {
+        ui->infoLabel->setText("Актуальные предложения по " + ptr->insurance_type());
         ins[index] = *ptr;
+        insurance->setInsurances(ins);
     }
-    insurance->setInsurances(ins);
     delete ptr;
+
 }
 
 

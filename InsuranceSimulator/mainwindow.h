@@ -53,7 +53,7 @@ private:
     QVector<QString> hist_ = QVector<QString>();
     QVector<double> capitals_ = { 0 };
     QLineSeries *series_ = new QLineSeries();
-    QValueAxis* gay = nullptr;
+    QValueAxis* axisX = nullptr, *axisY = nullptr;
     double mx = 0;
 
     QString int_to_months(long long n);
