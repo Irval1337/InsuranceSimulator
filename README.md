@@ -1,34 +1,14 @@
 ## InsuranceSimulator
+Простая модель управления страховой компанией, созданная с помощью Qt C++. Основной функционал:
+* Возможность создания любого количества категорий страхования и предложений по ним
+* Псевдо-случайные изменения показателей спроса
+* Логгирование основных событий: (налог гос-ву, новые клиенты, возмещения по страховым случаям, завершение действия договора)
+* Возможность выставлять срок актуальности для каждого предложения
+* Наличие конфиг-системы на базе QJson
+* Небольшой график зависимости капитала от пройденного времени
 
-### Classes
+Скриншоты работы:
 
-#### StatsData // суммы выручки/выплат/клиентов
- * int total_customers_count // количество покупателей
- * int month_customers_count // количество новых покупателей за месяц
- * int total_revenue // общая выручка
- * int month_revenue // выручка за прошлый месяц
- * int total_payment_amount // общая сумма выплат за все время
- * int month_payment_amount // сумма выплат за последний месяц
-
-#### InsuranceOffer: // страховое предложение
- * int contribution_amount // взнос
- * int contribution_period (in months) // периодичность взноса
- * int duration (in months) // срок действия договора
- * double max_reimbursement_amount (in rubles) // максимальныя сумма возмещения
- * double franchise (in rubles) // минимальная сумма возмещения (франшиза)
- * string insurance_company_name // название компании, которая предлагает страховку (ОСАГО/КАСКО)
- * string insurance_type // общий тип, к которому относится это предложение (авто/здоровье/жилье)
- * int relevance_period (in months) // сколько еще месяцев предложение актуально
- * StatsData stats // общая информация о клиентах
-
-#### InsuranceType: // тип страховки (авто/здоровье/жилье)
- * InsuranceOffer[] offers // все предложения, которые доступны для этого типа
- * bool enabled // предоставляем ли мы сейчас эти услуги
- * int potential_customers_count // количество потенциальных покупателей
- * pair<int, int> insured_events_range // диапазон изменения количества страховых случаев каждый месяц
- * StatsData stats // общая информация о клиентах
-
-#### Insurance:
- * InsuranceType[] insurances // все страховки, которые предоставляются компанией
- * double tax_percentage // размер налога гос-ву
- * StatsData stats // общая информация о клиентах
+![image](https://github.com/Irval1337/InsuranceSimulator/assets/56792892/79d8a387-fee6-4c32-b170-63adc6929554)
+![image](https://github.com/Irval1337/InsuranceSimulator/assets/56792892/bde70574-e8c9-41e6-b7b4-023b9a75847b)
+![image](https://github.com/Irval1337/InsuranceSimulator/assets/56792892/786c243c-3ca7-4522-a9f4-c02d7932073f)
