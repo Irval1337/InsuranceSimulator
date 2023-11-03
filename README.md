@@ -9,6 +9,5 @@
 
 Скриншоты работы:
 
-![image](https://github.com/Irval1337/InsuranceSimulator/assets/56792892/79d8a387-fee6-4c32-b170-63adc6929554)
-![image](https://github.com/Irval1337/InsuranceSimulator/assets/56792892/bde70574-e8c9-41e6-b7b4-023b9a75847b)
-![image](https://github.com/Irval1337/InsuranceSimulator/assets/56792892/786c243c-3ca7-4522-a9f4-c02d7932073f)
+![image](https://github.com/Irval1337/InsuranceSimulator/assets/56792892/263942a3-8598-4717-816e-d1fd9821b4cb)
+![image](https://github.com/Irval1337/InsuranceSimulator/assets/56792892/010e2534-05b3-44b4-a6b4-7275371db2c4)
